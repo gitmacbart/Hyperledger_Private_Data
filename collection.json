@@ -1,7 +1,7 @@
 [
     {
        "name": "demo",
-       "policy": "OR('Org1MSP.member', 'Org2MSP.member')",
+       "policy": "OR('org1MSP.member', 'org2MSP.member')",
        "requiredPeerCount": 0,
        "maxPeerCount": 3,
        "blockToLive":1000000,
