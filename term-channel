@@ -1,0 +1,4 @@
+export CHANNEL_ONE_NAME=channel13
+export CHANNEL_ONE_PROFILE=SampleAppChannelEtcdRaft13
+export CHANNEL_TWO_NAME=channel12
+export CHANNEL_TWO_PROFILE=SampleAppChannelEtcdRaft12
