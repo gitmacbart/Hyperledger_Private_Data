@@ -2,6 +2,7 @@ version: '2'
 
 networks:
   fabric-ca:
+    name: network01
 
 services:
   ca-tls:
@@ -74,6 +75,22 @@ services:
     ports:
         - 7056:7056
 
+  couchdb0:
+    container_name: couchdb0
+    image: couchdb:3.1.1
+    labels:
+      service: hyperledger-fabric
+        # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+        # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+        # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
+        # for example map it to utilize Fauxton User Interface in dev environments.
+    ports:
+      - "7984:5984"
+    networks:
+      - fabric-ca
 
   peer1-org1:
     container_name: peer1-org1
@@ -85,7 +102,7 @@ services:
         - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
         - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org1/peer1/msp
         - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=test-02-network_fabric-ca
+        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=network01
         - FABRIC_LOGGING_SPEC=info
         - CORE_PEER_TLS_ENABLED=true
         - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/org1/peer1/tls-msp/signcerts/cert.pem
@@ -95,6 +112,14 @@ services:
         - CORE_PEER_GOSSIP_ORGLEADER=false
         - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1-org1:7051
         - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+        - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
+        # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+        # provide the credentials for ledger to connect to CouchDB.  The username and password must
+        # match the username and password set for the associated CouchDB.
+        - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+        - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+        - couchdb0
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org1/peer1
     volumes:
         - /var/run:/host/var/run
@@ -104,6 +129,23 @@ services:
     networks:
         - fabric-ca
 
+  couchdb1:
+    container_name: couchdb1
+    image: couchdb:3.1.1
+    labels:
+      service: hyperledger-fabric
+        # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+        # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+        # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
+        # for example map it to utilize Fauxton User Interface in dev environments.
+    ports:
+      - "8984:5984"
+    networks:
+      - fabric-ca
+        
   peer1-org2:
     container_name: peer1-org2
     image: hyperledger/fabric-peer:latest
@@ -114,7 +156,7 @@ services:
         - CORE_PEER_LISTENADDRESS=0.0.0.0:8051
         - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org2/peer1/msp
         - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=test-02-network_fabric-ca
+        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=network01
         - FABRIC_LOGGING_SPEC=info
         - CORE_PEER_TLS_ENABLED=true
         - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/org2/peer1/tls-msp/signcerts/cert.pem
@@ -124,6 +166,14 @@ services:
         - CORE_PEER_GOSSIP_ORGLEADER=false
         - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1-org2:8051
         - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+        - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
+        # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+        # provide the credentials for ledger to connect to CouchDB.  The username and password must
+        # match the username and password set for the associated CouchDB.
+        - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+        - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+        - couchdb1
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org2/peer1
     volumes:
         - /var/run:/host/var/run
@@ -132,6 +182,23 @@ services:
         - 8051:8051
     networks:
         - fabric-ca
+
+  couchdb2:
+    container_name: couchdb2
+    image: couchdb:3.1.1
+    labels:
+      service: hyperledger-fabric
+        # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+        # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+        # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
+        # for example map it to utilize Fauxton User Interface in dev environments.
+    ports:
+      - "8984:5984"
+    networks:
+      - fabric-ca
 
   peer1-org3:
     container_name: peer1-org3
@@ -143,7 +210,7 @@ services:
         - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
         - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org3/peer1/msp
         - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=test-02-network_fabric-ca
+        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=network01
         - FABRIC_LOGGING_SPEC=info
         - CORE_PEER_TLS_ENABLED=true
         - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/org3/peer1/tls-msp/signcerts/cert.pem
@@ -153,6 +220,14 @@ services:
         - CORE_PEER_GOSSIP_ORGLEADER=false
         - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1-org3:9051
         - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+        - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
+        # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+        # provide the credentials for ledger to connect to CouchDB.  The username and password must
+        # match the username and password set for the associated CouchDB.
+        - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+        - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+        - couchdb2
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org3/peer1
     volumes:
         - /var/run:/host/var/run
