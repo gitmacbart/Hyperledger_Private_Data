@@ -92,7 +92,7 @@ Organizations:
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
             - Host: peer1-org2
-              Port: 9051
+              Port: 8051
 
     - &org3
         # DefaultOrg defines the organization which is used in the sampleconfig
@@ -130,7 +130,7 @@ Organizations:
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
             - Host: peer1-org3
-              Port: 8051
+              Port: 9051
 
 ################################################################################
 #
@@ -335,54 +335,14 @@ Channel: &ChannelDefaults
 ################################################################################
 Profiles:
 
-    OrgsOrdererGenesis:
+    SampleAppChannelEtcdRaft:
+        Consortium: NewAFTN
         <<: *ChannelDefaults
         Orderer:
             <<: *OrdererDefaults
             Organizations:
                 - *org1
                 - *org2
-            Capabilities:
-                <<: *OrdererCapabilities
-        Consortiums:
-            SampleConsortium:
-                Organizations:
-                    - *org1
-                    - *org2
-    OrgsChannel:
-        Consortium: SampleConsortium
-        <<: *ChannelDefaults
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *org1
-                - *org2
-            Capabilities:
-                <<: *ApplicationCapabilities
-
-    SampleAppChannelEtcdRaft12:
-        <<: *ChannelDefaults
-        Orderer:
-            <<: *OrdererDefaults
-            Organizations:
-                - *org1
-                - *org2
-            Capabilities:
-                <<: *OrdererCapabilities
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *org1
-                - *org2
-            Capabilities:
-                <<: *ApplicationCapabilities
-
-    SampleAppChannelEtcdRaft13:
-        <<: *ChannelDefaults
-        Orderer:
-            <<: *OrdererDefaults
-            Organizations:
-                - *org1
                 - *org3
             Capabilities:
                 <<: *OrdererCapabilities
@@ -390,6 +350,7 @@ Profiles:
             <<: *ApplicationDefaults
             Organizations:
                 - *org1
+                - *org2
                 - *org3
             Capabilities:
                 <<: *ApplicationCapabilities
