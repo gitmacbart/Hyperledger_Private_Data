@@ -91,3 +91,50 @@ outputs is
 
 > 2021-08-04 14:31:20.797 CEST [cli.lifecycle.chaincode] submitInstallProposal -> INFO 001 Installed remotely: response:<status:200
 > 2021-08-04 14:31:20.797 CEST [cli.lifecycle.chaincode] submitInstallProposal -> INFO 002 Chaincode code package identifier: **aftn_1:515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de**
+
+```
+source term-ansp
+peer lifecycle chaincode install aftn.tar.gz
+
+source term-airport
+peer lifecycle chaincode install aftn.tar.gz
+```
+
+## Approve Chaincode
+
+```
+source term-airline
+peer lifecycle chaincode approveformyorg --tls --cafile $ORDERER_CA -o localhost:7050 --channelID $CHANNEL_NAME --name aftncc --version 1 --init-required --sequence 1 --waitForEvent --collections-config collection_UK_airspace.json --package-id aftn_1:515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de
+```
+> 2021-08-04 14:43:35.822 CEST [chaincodeCmd] ClientWait -> INFO 001 txid >[b646086a57388eadc107bfb777203400868d5a4f8518b63701f92c61f6bba11f] committed with status (VALID) at localhost:7051
+
+```
+source term-ansp
+peer lifecycle chaincode approveformyorg --tls --cafile $ORDERER_CA -o localhost:8050 --channelID $CHANNEL_NAME --name aftncc --version 1 --init-required --sequence 1 --waitForEvent --collections-config collection_UK_airspace.json --package-id aftn_1:515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de
+
+source term-airport
+peer lifecycle chaincode approveformyorg --tls --cafile $ORDERER_CA -o localhost:9050 --channelID $CHANNEL_NAME --name aftncc --version 1 --init-required --sequence 1 --waitForEvent --collections-config collection_UK_airspace.json --package-id aftn_1:515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de
+```
+
+## Commit Chaincode
+
+```
+source term-airline
+
+peer lifecycle chaincode commit --tls --cafile $ORDERER_CA -o localhost:7050 --peerAddresses $CORE_PEER_ADDRESS --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE --peerAddresses localhost:8051 --tlsRootCertFiles /tmp/hyperledger/ansp/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem --channelID $CHANNEL_NAME --name aftncc --version 1 --sequence 1 --init-required --collections-config collection_UK_airspace.json
+```
+Output is
+
+>2021-08-04 14:50:09.976 CEST [chaincodeCmd] ClientWait -> INFO 001 txid >[eb38dd44f4dd8f9bd0f6334b49735046dddf2724f1b9e2a665066f8e81ed6e39] committed with status (VALID) at localhost:7051
+>2021-08-04 14:50:10.024 CEST [chaincodeCmd] ClientWait -> INFO 002 txid [eb38dd44f4dd8f9bd0f6334b49735046dddf2724f1b9e2a665066f8e81ed6e39] committed with status (VALID) at localhost:8051
+
+And 3 containers are started as below
+
+>dev-peer1-airport-aftn_1-515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de-67611a118fa520f369591024e31a015adc67febb07fdce398bbe6a84b6e625aa   "chaincode -peer.add…"   42 seconds ago      Up 41 seconds                                                                                             dev-peer1-airport-aftn_1-515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de
+
+>dev-peer1-ansp-aftn_1-515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de-de0937db2d44b1502fb40be2e5bfe660cbc98c6b7bbd6052c25065f66ecbb147      "chaincode -peer.add…"   42 seconds ago      Up 41 seconds                                                                                             dev-peer1-ansp-aftn_1-515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de
+
+>dev-peer1-airline-aftn_1-515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de-01e694ca5cff2016a3062ec072cc1ab23b4f28601cb6b3699fcd455415bf145c   "chaincode -peer.add…"   42 seconds ago      Up 41 seconds                                                                                             dev-peer1-airline-aftn_1-515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de
+
+
+
