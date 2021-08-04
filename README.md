@@ -138,3 +138,8 @@ And 3 containers are started as below
 
 
 
+## Init Chaincode
+
+```
+peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer1-airline --tls true --cafile $ORDERER_CA --peerAddresses localhost:7051 --tlsRootCertFiles /tmp/hyperledger/airline/peer1/assets/tls-ca/tls-ca-cert.pem --peerAddresses localhost:8051 --tlsRootCertFiles /tmp/hyperledger/ansp/peer1/assets/tls-ca/tls-ca-cert.pem --channelID $CHANNEL_NAME --name aftncc --isInit -c '{"Args":["2021-08-04ZAGBA0849","Created"]}'
+```
