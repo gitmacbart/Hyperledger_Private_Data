@@ -49,16 +49,20 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	var err error
 	if fn == "set" {
 		result, err = set(stub, args)
-	} else if fn == "setPrivate" {
-		result, err = setPrivate(stub, args)
-	} else if fn == "setPrivateOrg1" {
-		result, err = setPrivateOrg1(stub, args)
+	} else if fn == "setPrivateAFTN" {
+		result, err = setPrivateAFTN(stub, args)
+	} else if fn == "setPrivateAirline" {
+		result, err = setPrivateAirline(stub, args)
+	} else if fn == "setPrivateAnsp" {
+		result, err = setPrivateAnsp(stub, args)
 	} else if fn == "setPrivateTransient" {
 		result, err = setPrivateTransient(stub, args)
 	} else if fn == "getPrivate" {
 		result, err = getPrivate(stub, args)
-	} else if fn == "getPrivateOrg1" {
-		result, err = getPrivateOrg1(stub, args)
+	} else if fn == "getPrivateAirline" {
+		result, err = getPrivateAirline(stub, args)
+	} else if fn == "getPrivateAnsp" {
+		result, err = getPrivateAnsp(stub, args)
 	} else { // assume 'get' even if fn is nil
 		result, err = get(stub, args)
 	}
@@ -84,24 +88,36 @@ func set(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	return args[1], nil
 }
 
-func setPrivate(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+func setPrivateAFTN(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	if len(args) != 2 {
 		return "", fmt.Errorf("Incorrect arguments. Expecting a key and a value")
 	}
 
-	err := stub.PutPrivateData("aftn", args[0], []byte(args[1]))
+	err := stub.PutPrivateData("UKairspace", args[0], []byte(args[1]))
 	if err != nil {
 		return "", fmt.Errorf("Failed to set asset: %s", args[0])
 	}
 	return args[1], nil
 }
 
-func setPrivateOrg1(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+func setPrivateAirline(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	if len(args) != 2 {
 		return "", fmt.Errorf("Incorrect arguments. Expecting a key and a value")
 	}
 
-	err := stub.PutPrivateData("_implicit_org_org1MSP", args[0], []byte(args[1]))
+	err := stub.PutPrivateData("_implicit_org_airlineMSP", args[0], []byte(args[1]))
+	if err != nil {
+		return "", fmt.Errorf("Failed to set asset: %s", args[0])
+	}
+	return args[1], nil
+}
+
+func setPrivateAnsp(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+	if len(args) != 2 {
+		return "", fmt.Errorf("Incorrect arguments. Expecting a key and a value")
+	}
+
+	err := stub.PutPrivateData("_implicit_org_anspMSP", args[0], []byte(args[1]))
 	if err != nil {
 		return "", fmt.Errorf("Failed to set asset: %s", args[0])
 	}
@@ -175,12 +191,27 @@ func getPrivate(stub shim.ChaincodeStubInterface, args []string) (string, error)
 	return string(value), nil
 }
 
-func getPrivateOrg1(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+func getPrivateAirline(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	if len(args) != 1 {
 		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
 	}
 
-	value, err := stub.GetPrivateData("_implicit_org_org1MSP", args[0])
+	value, err := stub.GetPrivateData("_implicit_org_airlineMSP", args[0])
+	if err != nil {
+		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
+	}
+	if value == nil {
+		return "", fmt.Errorf("Asset not found: %s", args[0])
+	}
+	return string(value), nil
+}
+
+func getPrivateAnsp(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+	if len(args) != 1 {
+		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
+	}
+
+	value, err := stub.GetPrivateData("_implicit_org_anspMSP", args[0])
 	if err != nil {
 		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
 	}

@@ -2,7 +2,7 @@ version: '2'
 
 networks:
   fabric-ca:
-    name: network01
+    name: networkUK
 
 services:
   ca-tls:
@@ -22,54 +22,54 @@ services:
     ports:
         - 7052:7052
 
-  rca-org1:
-    container_name: rca-org1
+  rca-airline:
+    container_name: rca-airline
     image: hyperledger/fabric-ca:latest
-    command: sh -c 'fabric-ca-server start -d -b rca-org1-admin:rca-org1-adminpw --port 7054'
+    command: sh -c 'fabric-ca-server start -d -b rca-airline-admin:rca-airline-adminpw --port 7054'
     environment:
         - FABRIC_CA_SERVER_HOME=/tmp/hyperledger/fabric-ca/crypto
         - FABRIC_CA_SERVER_TLS_ENABLED=true
-        - FABRIC_CA_SERVER_CSR_CN=rca-org1
+        - FABRIC_CA_SERVER_CSR_CN=rca-airline
         - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
         - FABRIC_CA_SERVER_DEBUG=true
     volumes:
-        - /tmp/hyperledger/org1/ca:/tmp/hyperledger/fabric-ca
+        - /tmp/hyperledger/airline/ca:/tmp/hyperledger/fabric-ca
     networks:
         - fabric-ca
     ports:
         - 7054:7054
 
-  rca-org2:
-    container_name: rca-org2
+  rca-ansp:
+    container_name: rca-ansp
     image: hyperledger/fabric-ca:latest
-    command: sh -c 'fabric-ca-server start -d -b rca-org2-admin:rca-org2-adminpw --port 7055'
+    command: sh -c 'fabric-ca-server start -d -b rca-ansp-admin:rca-ansp-adminpw --port 7055'
 
     environment:
         - FABRIC_CA_SERVER_HOME=/tmp/hyperledger/fabric-ca/crypto
         - FABRIC_CA_SERVER_TLS_ENABLED=true
-        - FABRIC_CA_SERVER_CSR_CN=rca-org2
+        - FABRIC_CA_SERVER_CSR_CN=rca-ansp
         - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
         - FABRIC_CA_SERVER_DEBUG=true
     volumes:
-        - /tmp/hyperledger/org2/ca:/tmp/hyperledger/fabric-ca
+        - /tmp/hyperledger/ansp/ca:/tmp/hyperledger/fabric-ca
     networks:
         - fabric-ca
     ports:
         - 7055:7055
 
-  rca-org3:
-    container_name: rca-org3
+  rca-airport:
+    container_name: rca-airport
     image: hyperledger/fabric-ca:latest
-    command: sh -c 'fabric-ca-server start -d -b rca-org3-admin:rca-org3-adminpw --port 7056'
+    command: sh -c 'fabric-ca-server start -d -b rca-airport-admin:rca-airport-adminpw --port 7056'
 
     environment:
         - FABRIC_CA_SERVER_HOME=/tmp/hyperledger/fabric-ca/crypto
         - FABRIC_CA_SERVER_TLS_ENABLED=true
-        - FABRIC_CA_SERVER_CSR_CN=rca-org3
+        - FABRIC_CA_SERVER_CSR_CN=rca-airport
         - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
         - FABRIC_CA_SERVER_DEBUG=true
     volumes:
-        - /tmp/hyperledger/org3/ca:/tmp/hyperledger/fabric-ca
+        - /tmp/hyperledger/airport/ca:/tmp/hyperledger/fabric-ca
     networks:
         - fabric-ca
     ports:
@@ -92,25 +92,25 @@ services:
     networks:
       - fabric-ca
 
-  peer1-org1:
-    container_name: peer1-org1
+  peer1-airline:
+    container_name: peer1-airline
     image: hyperledger/fabric-peer:latest
     environment:
-        - CORE_PEER_ID=peer1-org1
-        - CORE_PEER_ADDRESS=peer1-org1:7051
-        - CORE_PEER_LOCALMSPID=org1MSP
+        - CORE_PEER_ID=peer1-airline
+        - CORE_PEER_ADDRESS=peer1-airline:7051
+        - CORE_PEER_LOCALMSPID=airlineMSP
         - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-        - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org1/peer1/msp
+        - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/airline/peer1/msp
         - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=network01
+        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=networkUK
         - FABRIC_LOGGING_SPEC=info
         - CORE_PEER_TLS_ENABLED=true
-        - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/org1/peer1/tls-msp/signcerts/cert.pem
-        - CORE_PEER_TLS_KEY_FILE=/tmp/hyperledger/org1/peer1/tls-msp/keystore/key.pem
-        - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/org1/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+        - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/airline/peer1/tls-msp/signcerts/cert.pem
+        - CORE_PEER_TLS_KEY_FILE=/tmp/hyperledger/airline/peer1/tls-msp/keystore/key.pem
+        - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/airline/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
         - CORE_PEER_GOSSIP_USELEADERELECTION=true
         - CORE_PEER_GOSSIP_ORGLEADER=false
-        - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1-org1:7051
+        - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1-airline:7051
         - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
         - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
         - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
@@ -121,10 +121,10 @@ services:
         - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     depends_on:
         - couchdb0
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org1/peer1
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/airline/peer1
     volumes:
         - /var/run:/host/var/run
-        - /tmp/hyperledger/org1/peer1:/tmp/hyperledger/org1/peer1
+        - /tmp/hyperledger/airline/peer1:/tmp/hyperledger/airline/peer1
     ports:
         - 7051:7051
     networks:
@@ -147,25 +147,25 @@ services:
     networks:
       - fabric-ca
         
-  peer1-org2:
-    container_name: peer1-org2
+  peer1-ansp:
+    container_name: peer1-ansp
     image: hyperledger/fabric-peer:latest
     environment:
-        - CORE_PEER_ID=peer1-org2
-        - CORE_PEER_ADDRESS=peer1-org2:8051
-        - CORE_PEER_LOCALMSPID=org2MSP
+        - CORE_PEER_ID=peer1-ansp
+        - CORE_PEER_ADDRESS=peer1-ansp:8051
+        - CORE_PEER_LOCALMSPID=anspMSP
         - CORE_PEER_LISTENADDRESS=0.0.0.0:8051
-        - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org2/peer1/msp
+        - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/ansp/peer1/msp
         - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=network01
+        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=networkUK
         - FABRIC_LOGGING_SPEC=info
         - CORE_PEER_TLS_ENABLED=true
-        - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/org2/peer1/tls-msp/signcerts/cert.pem
-        - CORE_PEER_TLS_KEY_FILE=/tmp/hyperledger/org2/peer1/tls-msp/keystore/key.pem
-        - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/org2/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+        - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/ansp/peer1/tls-msp/signcerts/cert.pem
+        - CORE_PEER_TLS_KEY_FILE=/tmp/hyperledger/ansp/peer1/tls-msp/keystore/key.pem
+        - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/ansp/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
         - CORE_PEER_GOSSIP_USELEADERELECTION=true
         - CORE_PEER_GOSSIP_ORGLEADER=false
-        - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1-org2:8051
+        - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1-ansp:8051
         - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
         - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
         - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
@@ -176,10 +176,10 @@ services:
         - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     depends_on:
         - couchdb1
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org2/peer1
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/ansp/peer1
     volumes:
         - /var/run:/host/var/run
-        - /tmp/hyperledger/org2/peer1:/tmp/hyperledger/org2/peer1
+        - /tmp/hyperledger/ansp/peer1:/tmp/hyperledger/ansp/peer1
     ports:
         - 8051:8051
     networks:
@@ -202,25 +202,25 @@ services:
     networks:
       - fabric-ca
 
-  peer1-org3:
-    container_name: peer1-org3
+  peer1-airport:
+    container_name: peer1-airport
     image: hyperledger/fabric-peer:latest
     environment:
-        - CORE_PEER_ID=peer1-org3
-        - CORE_PEER_ADDRESS=peer1-org3:9051
-        - CORE_PEER_LOCALMSPID=org3MSP
+        - CORE_PEER_ID=peer1-airport
+        - CORE_PEER_ADDRESS=peer1-airport:9051
+        - CORE_PEER_LOCALMSPID=airportMSP
         - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
-        - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org3/peer1/msp
+        - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/airport/peer1/msp
         - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=network01
+        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=networkUK
         - FABRIC_LOGGING_SPEC=info
         - CORE_PEER_TLS_ENABLED=true
-        - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/org3/peer1/tls-msp/signcerts/cert.pem
-        - CORE_PEER_TLS_KEY_FILE=/tmp/hyperledger/org3/peer1/tls-msp/keystore/key.pem
-        - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/org3/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+        - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/airport/peer1/tls-msp/signcerts/cert.pem
+        - CORE_PEER_TLS_KEY_FILE=/tmp/hyperledger/airport/peer1/tls-msp/keystore/key.pem
+        - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/airport/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
         - CORE_PEER_GOSSIP_USELEADERELECTION=true
         - CORE_PEER_GOSSIP_ORGLEADER=false
-        - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1-org3:9051
+        - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1-airport:9051
         - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
         - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
         - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
@@ -231,120 +231,120 @@ services:
         - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     depends_on:
         - couchdb2
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org3/peer1
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/airport/peer1
     volumes:
         - /var/run:/host/var/run
-        - /tmp/hyperledger/org3/peer1:/tmp/hyperledger/org3/peer1
+        - /tmp/hyperledger/airport/peer1:/tmp/hyperledger/airport/peer1
     ports:
         - 9051:9051
     networks:
         - fabric-ca 
 
-  orderer1-org1:
-    container_name: orderer1-org1
+  orderer1-airline:
+    container_name: orderer1-airline
     image: hyperledger/fabric-orderer:2.3.2
     environment:
         - ORDERER_HOME=/tmp/hyperledger/orderer
-        - ORDERER_HOST=orderer1-org1
+        - ORDERER_HOST=orderer1-airline
         - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
         # - ORDERER_GENERAL_GENESISMETHOD=file
-        # - ORDERER_GENERAL_GENESISFILE=/tmp/hyperledger/org1/orderer1/genesis.block
-        - ORDERER_GENERAL_LOCALMSPID=org1MSP
-        - ORDERER_GENERAL_LOCALMSPDIR=/tmp/hyperledger/org1/orderer1/msp
+        # - ORDERER_GENERAL_GENESISFILE=/tmp/hyperledger/airline/orderer1/genesis.block
+        - ORDERER_GENERAL_LOCALMSPID=airlineMSP
+        - ORDERER_GENERAL_LOCALMSPDIR=/tmp/hyperledger/airline/orderer1/msp
         - ORDERER_GENERAL_TLS_ENABLED=true
-        - ORDERER_GENERAL_TLS_CERTIFICATE=/tmp/hyperledger/org1/orderer1/tls-msp/signcerts/cert.pem
-        - ORDERER_GENERAL_TLS_PRIVATEKEY=/tmp/hyperledger/org1/orderer1/tls-msp/keystore/key.pem
-        - ORDERER_GENERAL_TLS_ROOTCAS=[/tmp/hyperledger/org1/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
+        - ORDERER_GENERAL_TLS_CERTIFICATE=/tmp/hyperledger/airline/orderer1/tls-msp/signcerts/cert.pem
+        - ORDERER_GENERAL_TLS_PRIVATEKEY=/tmp/hyperledger/airline/orderer1/tls-msp/keystore/key.pem
+        - ORDERER_GENERAL_TLS_ROOTCAS=[/tmp/hyperledger/airline/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
         - ORDERER_GENERAL_LOGLEVEL=debug
         - ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs
-        - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/tmp/hyperledger/org1/orderer1/tls-msp/signcerts/cert.pem
-        - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/tmp/hyperledger/org1/orderer1/tls-msp/keystore/key.pem
-        - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/tmp/hyperledger/org1/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
+        - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/tmp/hyperledger/airline/orderer1/tls-msp/signcerts/cert.pem
+        - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/tmp/hyperledger/airline/orderer1/tls-msp/keystore/key.pem
+        - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/tmp/hyperledger/airline/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
         - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
         - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:7080
         - ORDERER_ADMIN_TLS_ENABLED=true
-        - ORDERER_ADMIN_TLS_PRIVATEKEY=/tmp/hyperledger/org1/orderer1/tls-msp/keystore/key.pem
-        - ORDERER_ADMIN_TLS_CERTIFICATE=/tmp/hyperledger/org1/orderer1/tls-msp/signcerts/cert.pem
+        - ORDERER_ADMIN_TLS_PRIVATEKEY=/tmp/hyperledger/airline/orderer1/tls-msp/keystore/key.pem
+        - ORDERER_ADMIN_TLS_CERTIFICATE=/tmp/hyperledger/airline/orderer1/tls-msp/signcerts/cert.pem
         - ORDERER_ADMIN_TLS_CLIENTAUTHREQUIRED=true
-        - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/tmp/hyperledger/org1/admin/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
+        - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/tmp/hyperledger/airline/admin/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
         - ORDERER_CHANNELPARTICIPATION_ENABLED=true
     volumes:
-        - /tmp/hyperledger/org1/orderer1:/tmp/hyperledger/org1/orderer1/
-        - /tmp/hyperledger/org1/admin:/tmp/hyperledger/org1/admin/
+        - /tmp/hyperledger/airline/orderer1:/tmp/hyperledger/airline/orderer1/
+        - /tmp/hyperledger/airline/admin:/tmp/hyperledger/airline/admin/
     ports:
         - 7050:7050
         - 7080:7080
     networks:
         - fabric-ca
 
-  orderer1-org2:
-    container_name: orderer1-org2
+  orderer1-ansp:
+    container_name: orderer1-ansp
     image: hyperledger/fabric-orderer:2.3.2
     environment:
         - ORDERER_HOME=/tmp/hyperledger/orderer
-        - ORDERER_HOST=orderer1-org2
+        - ORDERER_HOST=orderer1-ansp
         - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
         # - ORDERER_GENERAL_GENESISMETHOD=file
-        # - ORDERER_GENERAL_GENESISFILE=/tmp/hyperledger/org2/orderer1/genesis.block
-        - ORDERER_GENERAL_LOCALMSPID=org2MSP
-        - ORDERER_GENERAL_LOCALMSPDIR=/tmp/hyperledger/org2/orderer1/msp
+        # - ORDERER_GENERAL_GENESISFILE=/tmp/hyperledger/ansp/orderer1/genesis.block
+        - ORDERER_GENERAL_LOCALMSPID=anspMSP
+        - ORDERER_GENERAL_LOCALMSPDIR=/tmp/hyperledger/ansp/orderer1/msp
         - ORDERER_GENERAL_TLS_ENABLED=true
-        - ORDERER_GENERAL_TLS_CERTIFICATE=/tmp/hyperledger/org2/orderer1/tls-msp/signcerts/cert.pem
-        - ORDERER_GENERAL_TLS_PRIVATEKEY=/tmp/hyperledger/org2/orderer1/tls-msp/keystore/key.pem
-        - ORDERER_GENERAL_TLS_ROOTCAS=[/tmp/hyperledger/org2/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
+        - ORDERER_GENERAL_TLS_CERTIFICATE=/tmp/hyperledger/ansp/orderer1/tls-msp/signcerts/cert.pem
+        - ORDERER_GENERAL_TLS_PRIVATEKEY=/tmp/hyperledger/ansp/orderer1/tls-msp/keystore/key.pem
+        - ORDERER_GENERAL_TLS_ROOTCAS=[/tmp/hyperledger/ansp/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
         - ORDERER_GENERAL_LOGLEVEL=debug
         - ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs
-        - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/tmp/hyperledger/org2/orderer1/tls-msp/signcerts/cert.pem
-        - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/tmp/hyperledger/org2/orderer1/tls-msp/keystore/key.pem
-        - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/tmp/hyperledger/org2/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
+        - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/tmp/hyperledger/ansp/orderer1/tls-msp/signcerts/cert.pem
+        - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/tmp/hyperledger/ansp/orderer1/tls-msp/keystore/key.pem
+        - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/tmp/hyperledger/ansp/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
         - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
         - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:7080
         - ORDERER_ADMIN_TLS_ENABLED=true
-        - ORDERER_ADMIN_TLS_PRIVATEKEY=/tmp/hyperledger/org2/orderer1/tls-msp/keystore/key.pem
-        - ORDERER_ADMIN_TLS_CERTIFICATE=/tmp/hyperledger/org2/orderer1/tls-msp/signcerts/cert.pem
+        - ORDERER_ADMIN_TLS_PRIVATEKEY=/tmp/hyperledger/ansp/orderer1/tls-msp/keystore/key.pem
+        - ORDERER_ADMIN_TLS_CERTIFICATE=/tmp/hyperledger/ansp/orderer1/tls-msp/signcerts/cert.pem
         - ORDERER_ADMIN_TLS_CLIENTAUTHREQUIRED=true
-        - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/tmp/hyperledger/org2/admin/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
+        - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/tmp/hyperledger/ansp/admin/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
         - ORDERER_CHANNELPARTICIPATION_ENABLED=true        
     volumes:
-        - /tmp/hyperledger/org2/orderer1:/tmp/hyperledger/org2/orderer1/
-        - /tmp/hyperledger/org2/admin:/tmp/hyperledger/org2/admin/
+        - /tmp/hyperledger/ansp/orderer1:/tmp/hyperledger/ansp/orderer1/
+        - /tmp/hyperledger/ansp/admin:/tmp/hyperledger/ansp/admin/
     ports:
         - 8050:7050
         - 8080:7080
     networks:
         - fabric-ca
 
-  orderer1-org3:
-    container_name: orderer1-org3
+  orderer1-airport:
+    container_name: orderer1-airport
     image: hyperledger/fabric-orderer:2.3.2
     environment:
         - ORDERER_HOME=/tmp/hyperledger/orderer
-        - ORDERER_HOST=orderer1-org3
+        - ORDERER_HOST=orderer1-airport
         - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
         # - ORDERER_GENERAL_GENESISMETHOD=file
-        # - ORDERER_GENERAL_GENESISFILE=/tmp/hyperledger/org3/orderer1/genesis.block
-        - ORDERER_GENERAL_LOCALMSPID=org3MSP
-        - ORDERER_GENERAL_LOCALMSPDIR=/tmp/hyperledger/org3/orderer1/msp
+        # - ORDERER_GENERAL_GENESISFILE=/tmp/hyperledger/airport/orderer1/genesis.block
+        - ORDERER_GENERAL_LOCALMSPID=airportMSP
+        - ORDERER_GENERAL_LOCALMSPDIR=/tmp/hyperledger/airport/orderer1/msp
         - ORDERER_GENERAL_TLS_ENABLED=true
-        - ORDERER_GENERAL_TLS_CERTIFICATE=/tmp/hyperledger/org3/orderer1/tls-msp/signcerts/cert.pem
-        - ORDERER_GENERAL_TLS_PRIVATEKEY=/tmp/hyperledger/org3/orderer1/tls-msp/keystore/key.pem
-        - ORDERER_GENERAL_TLS_ROOTCAS=[/tmp/hyperledger/org3/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
+        - ORDERER_GENERAL_TLS_CERTIFICATE=/tmp/hyperledger/airport/orderer1/tls-msp/signcerts/cert.pem
+        - ORDERER_GENERAL_TLS_PRIVATEKEY=/tmp/hyperledger/airport/orderer1/tls-msp/keystore/key.pem
+        - ORDERER_GENERAL_TLS_ROOTCAS=[/tmp/hyperledger/airport/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
         - ORDERER_GENERAL_LOGLEVEL=debug
         - ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs
-        - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/tmp/hyperledger/org3/orderer1/tls-msp/signcerts/cert.pem
-        - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/tmp/hyperledger/org3/orderer1/tls-msp/keystore/key.pem
-        - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/tmp/hyperledger/org3/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
+        - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/tmp/hyperledger/airport/orderer1/tls-msp/signcerts/cert.pem
+        - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/tmp/hyperledger/airport/orderer1/tls-msp/keystore/key.pem
+        - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/tmp/hyperledger/airport/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
         - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
         - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:7080
         - ORDERER_ADMIN_TLS_ENABLED=true
-        - ORDERER_ADMIN_TLS_PRIVATEKEY=/tmp/hyperledger/org3/orderer1/tls-msp/keystore/key.pem
-        - ORDERER_ADMIN_TLS_CERTIFICATE=/tmp/hyperledger/org3/orderer1/tls-msp/signcerts/cert.pem
+        - ORDERER_ADMIN_TLS_PRIVATEKEY=/tmp/hyperledger/airport/orderer1/tls-msp/keystore/key.pem
+        - ORDERER_ADMIN_TLS_CERTIFICATE=/tmp/hyperledger/airport/orderer1/tls-msp/signcerts/cert.pem
         - ORDERER_ADMIN_TLS_CLIENTAUTHREQUIRED=true
-        - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/tmp/hyperledger/org3/admin/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
+        - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/tmp/hyperledger/airport/admin/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
         - ORDERER_CHANNELPARTICIPATION_ENABLED=true        
     volumes:
-        - /tmp/hyperledger/org3/orderer1:/tmp/hyperledger/org3/orderer1/
-        - /tmp/hyperledger/org3/admin:/tmp/hyperledger/org3/admin/
+        - /tmp/hyperledger/airport/orderer1:/tmp/hyperledger/airport/orderer1/
+        - /tmp/hyperledger/airport/admin:/tmp/hyperledger/airport/admin/
     ports:
         - 9050:7050
         - 9080:7080
