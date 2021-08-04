@@ -16,4 +16,11 @@ docker network prune
 ```
 
 ## Build the Channel
+```
+source term-aftn-channel
+source term-airline
 
+configtxgen -profile ${CHANNEL_PROFILE} -configPath ${PWD} -outputBlock ${CHANNEL_NAME}.block -channelID ${CHANNEL_NAME}
+```
+
+Output is aftn-channel.block file

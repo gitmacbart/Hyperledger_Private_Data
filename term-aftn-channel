@@ -1,0 +1,2 @@
+export CHANNEL_NAME=aftn-channel
+export CHANNEL_PROFILE=SampleAppChannelEtcdRaft
