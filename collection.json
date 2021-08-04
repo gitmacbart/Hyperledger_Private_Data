@@ -1,6 +1,6 @@
 [
     {
-       "name": "demo",
+       "name": "aftn",
        "policy": "OR('org1MSP.member', 'org2MSP.member')",
        "requiredPeerCount": 0,
        "maxPeerCount": 3,
