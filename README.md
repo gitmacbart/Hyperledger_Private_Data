@@ -1,11 +1,11 @@
 # Hyperledger_Private_Data
 My lab when Private Data with Hyperledger Fabric
 
-
->>>
+```
 rm -rf /tmp/hyperledger/*
 docker volume prune
 docker network prune
+```
 
 ## Build the network
 ```
@@ -14,3 +14,6 @@ docker network prune
  ./enrollAllOrgs_UK_airspace.sh
   docker-compose up -d
 ```
+
+## Build the Channel
+

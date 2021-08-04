@@ -1,0 +1,10 @@
+export HOME=/Users/arnaud/BlockChain/
+export PATH=$PATH:${HOME}/fabric-samples/bin
+export FABRIC_CFG_PATH=${HOME}/fabric-samples/config/
+export ORDERER_CA=/tmp/hyperledger/ansp/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_LOCALMSPID="anspMSP"
+export CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/ansp/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+export CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/ansp/admin/msp
+export CORE_PEER_ADDRESS=localhost:8051
