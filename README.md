@@ -54,3 +54,40 @@ peer channel join -b ${CHANNEL_NAME}.block
 source term-airport
 peer channel join -b ${CHANNEL_NAME}.block
 ```
+
+## Package AFTN chaincode
+
+sacc example modified as follow:
+```
+	if fn == "set" {
+		result, err = set(stub, args)
+	} else if fn == "setPrivateAFTN" {
+		result, err = setPrivateAFTN(stub, args)
+	} else if fn == "setPrivateAirline" {
+		result, err = setPrivateAirline(stub, args)
+	} else if fn == "setPrivateAnsp" {
+		result, err = setPrivateAnsp(stub, args)
+	} else if fn == "getPrivate" {
+		result, err = getPrivate(stub, args)
+	} else if fn == "getPrivateAirline" {
+		result, err = getPrivateAirline(stub, args)
+	} else if fn == "getPrivateAnsp" {
+		result, err = getPrivateAnsp(stub, args)
+```
+
+Command is:
+```
+peer lifecycle chaincode package aftn.tar.gz --path /Users/arnaud/BlockChain/FabricLabs/Hyperledger_Private_Data/aftn --label aftn_1
+```
+Outcome is aftn.tar.gz file
+
+## Install aftn chaincode
+
+```
+source term-airline
+peer lifecycle chaincode install aftn.tar.gz
+```
+outputs is 
+
+> 2021-08-04 14:31:20.797 CEST [cli.lifecycle.chaincode] submitInstallProposal -> INFO 001 Installed remotely: response:<status:200
+> 2021-08-04 14:31:20.797 CEST [cli.lifecycle.chaincode] submitInstallProposal -> INFO 002 Chaincode code package identifier: **aftn_1:515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de**

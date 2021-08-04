@@ -7,7 +7,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/hyperledger/fabric-chaincode-go/shim"
@@ -55,8 +54,6 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		result, err = setPrivateAirline(stub, args)
 	} else if fn == "setPrivateAnsp" {
 		result, err = setPrivateAnsp(stub, args)
-	} else if fn == "setPrivateTransient" {
-		result, err = setPrivateTransient(stub, args)
 	} else if fn == "getPrivate" {
 		result, err = getPrivate(stub, args)
 	} else if fn == "getPrivateAirline" {
@@ -122,41 +119,6 @@ func setPrivateAnsp(stub shim.ChaincodeStubInterface, args []string) (string, er
 		return "", fmt.Errorf("Failed to set asset: %s", args[0])
 	}
 	return args[1], nil
-}
-
-func setPrivateTransient(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-
-	type keyValueTransientInput struct {
-		Key   string `json:"key"`
-		Value string `json:"value"`
-	}
-
-	if len(args) != 0 {
-		return "", fmt.Errorf("Incorrect arguments. Expecting no data when using transient")
-	}
-
-	transMap, err := stub.GetTransient()
-	if err != nil {
-		return "", fmt.Errorf("Failed to get transient")
-	}
-
-	// assuming only "name" is processed
-	keyValueAsBytes, ok := transMap["keyvalue"]
-	if !ok {
-		return "", fmt.Errorf("key must be keyvalue")
-	}
-
-	var keyValueInput keyValueTransientInput
-	err = json.Unmarshal(keyValueAsBytes, &keyValueInput)
-	if err != nil {
-		return "", fmt.Errorf("Failed to decode JSON")
-	}
-
-	err = stub.PutPrivateData("aftn", keyValueInput.Key, []byte(keyValueInput.Value))
-	if err != nil {
-		return "", fmt.Errorf("Failed to set asset")
-	}
-	return keyValueInput.Value, nil
 }
 
 // Get returns the value of the specified asset key
