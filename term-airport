@@ -8,3 +8,7 @@ export CORE_PEER_LOCALMSPID="airportMSP"
 export CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/airport/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
 export CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/airport/admin/msp
 export CORE_PEER_ADDRESS=localhost:9051
+
+export CORE_ORDERER_ADDRESS=localhost:9080
+export ADMIN_TLS_CERTFILE=/tmp/hyperledger/airport/admin/tls-msp/signcerts/cert.pem
+export ADMIN_TLS_KEYFILE=/tmp/hyperledger/airport/admin/tls-msp/keystore/key.pem
