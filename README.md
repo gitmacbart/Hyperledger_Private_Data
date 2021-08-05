@@ -143,3 +143,21 @@ And 3 containers are started as below
 ```
 peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer1-airline --tls true --cafile $ORDERER_CA --peerAddresses localhost:7051 --tlsRootCertFiles /tmp/hyperledger/airline/peer1/assets/tls-ca/tls-ca-cert.pem --peerAddresses localhost:8051 --tlsRootCertFiles /tmp/hyperledger/ansp/peer1/assets/tls-ca/tls-ca-cert.pem --channelID $CHANNEL_NAME --name aftncc --isInit -c '{"Args":["2021-08-04ZAGBA0849","Created"]}'
 ```
+> That will create the state database on each nodes
+
+```
+peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer1-airline --tls true --cafile $ORDERER_CA --peerAddresses localhost:7051 --tlsRootCertFiles /tmp/hyperledger/airline/peer1/assets/tls-ca/tls-ca-cert.pem --peerAddresses localhost:8051 --tlsRootCertFiles /tmp/hyperledger/ansp/peer1/assets/tls-ca/tls-ca-cert.pem --channelID $CHANNEL_NAME --name aftncc -c '{"Args":["setPrivateAFTN","2021-08-03ZAGBA0849","RouteText:N0441F380 PODET DCT INGID DCT SIMBA"]}'
+```
+
+> That will create private and/or hash databases as referred in the private collection definition
+
+## Observe Databases on each member node
+
+As per docker-compose.yaml definition (username admin password adminpw)
+
+> http://localhost:7984/_utils/#/_all_dbs for airline
+> http://localhost:8984/_utils/#/_all_dbs for ansp
+> http://localhost:9984/_utils/#/_all_dbs for airport
+
+Regards
+Arnaud
