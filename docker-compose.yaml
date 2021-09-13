@@ -226,7 +226,7 @@ services:
         - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
         - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     depends_on:
-        - couchdb1
+        - couchdbez
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/ez/peer1
     volumes:
         - /var/run:/host/var/run
@@ -281,7 +281,7 @@ services:
         - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
         - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     depends_on:
-        - couchdb2
+        - couchdbnats
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/nats/peer1
     volumes:
         - /var/run:/host/var/run
@@ -336,7 +336,7 @@ services:
         - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
         - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     depends_on:
-        - couchdb2
+        - couchdblhr
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/lhr/peer1
     volumes:
         - /var/run:/host/var/run
