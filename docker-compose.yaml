@@ -29,7 +29,7 @@ services:
     environment:
         - FABRIC_CA_SERVER_HOME=/tmp/hyperledger/fabric-ca/crypto
         - FABRIC_CA_SERVER_TLS_ENABLED=true
-        - FABRIC_CA_SERVER_CSR_CN=rca-airline
+        - FABRIC_CA_SERVER_CSR_CN=rca-ba
         - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
         - FABRIC_CA_SERVER_DEBUG=true
     volumes:
@@ -46,7 +46,7 @@ services:
     environment:
         - FABRIC_CA_SERVER_HOME=/tmp/hyperledger/fabric-ca/crypto
         - FABRIC_CA_SERVER_TLS_ENABLED=true
-        - FABRIC_CA_SERVER_CSR_CN=rca-airline
+        - FABRIC_CA_SERVER_CSR_CN=rca-ez
         - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
         - FABRIC_CA_SERVER_DEBUG=true
     volumes:
@@ -64,7 +64,7 @@ services:
     environment:
         - FABRIC_CA_SERVER_HOME=/tmp/hyperledger/fabric-ca/crypto
         - FABRIC_CA_SERVER_TLS_ENABLED=true
-        - FABRIC_CA_SERVER_CSR_CN=rca-ansp
+        - FABRIC_CA_SERVER_CSR_CN=rca-nats
         - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
         - FABRIC_CA_SERVER_DEBUG=true
     volumes:
@@ -82,7 +82,7 @@ services:
     environment:
         - FABRIC_CA_SERVER_HOME=/tmp/hyperledger/fabric-ca/crypto
         - FABRIC_CA_SERVER_TLS_ENABLED=true
-        - FABRIC_CA_SERVER_CSR_CN=rca-airport
+        - FABRIC_CA_SERVER_CSR_CN=rca-lhr
         - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
         - FABRIC_CA_SERVER_DEBUG=true
     volumes:
@@ -99,7 +99,7 @@ services:
     environment:
         - FABRIC_CA_SERVER_HOME=/tmp/hyperledger/fabric-ca/crypto
         - FABRIC_CA_SERVER_TLS_ENABLED=true
-        - FABRIC_CA_SERVER_CSR_CN=rca-airline
+        - FABRIC_CA_SERVER_CSR_CN=rca-bhx
         - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
         - FABRIC_CA_SERVER_DEBUG=true
     volumes:
@@ -116,7 +116,7 @@ services:
     environment:
         - FABRIC_CA_SERVER_HOME=/tmp/hyperledger/fabric-ca/crypto
         - FABRIC_CA_SERVER_TLS_ENABLED=true
-        - FABRIC_CA_SERVER_CSR_CN=rca-airline
+        - FABRIC_CA_SERVER_CSR_CN=rca-man
         - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
         - FABRIC_CA_SERVER_DEBUG=true
     volumes:
