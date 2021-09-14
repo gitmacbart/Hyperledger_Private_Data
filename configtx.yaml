@@ -363,10 +363,10 @@ Orderer: &OrdererUKAirspace
           Port: 7050
           ClientTLSCert: /tmp/hyperledger/ba/orderer1/tls-msp/signcerts/cert.pem
           ServerTLSCert: /tmp/hyperledger/ba/orderer1/tls-msp/signcerts/cert.pem
-        - Host: orderer1-ez
+        - Host: orderer1-lhr
           Port: 7050
-          ClientTLSCert: /tmp/hyperledger/ez/orderer1/tls-msp/signcerts/cert.pem
-          ServerTLSCert: /tmp/hyperledger/ez/orderer1/tls-msp/signcerts/cert.pem
+          ClientTLSCert: /tmp/hyperledger/lhr/orderer1/tls-msp/signcerts/cert.pem
+          ServerTLSCert: /tmp/hyperledger/lhr/orderer1/tls-msp/signcerts/cert.pem
 
     # Batch Timeout: The amount of time to wait before creating a batch
     BatchTimeout: 2s
