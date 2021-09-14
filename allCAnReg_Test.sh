@@ -34,7 +34,7 @@ export FABRIC_CA_CLIENT_TLS_CERTFILES=/tmp/hyperledger/ba/ca/crypto/ca-cert.pem
 export FABRIC_CA_CLIENT_HOME=/tmp/hyperledger/ba/ca/admin
 
 fabric-ca-client enroll -d -u https://rca-ba-admin:rca-ba-adminpw@0.0.0.0:7054
-sleep 50
+sleep 5
 
 fabric-ca-client register -d --id.name peer1-ba --id.secret peer1PW --id.type peer -u https://0.0.0.0:7054
 fabric-ca-client register -d --id.name orderer1-ba --id.secret ordererpw --id.type orderer -u https://0.0.0.0:7054
@@ -46,7 +46,7 @@ export FABRIC_CA_CLIENT_TLS_CERTFILES=/tmp/hyperledger/ez/ca/crypto/ca-cert.pem
 export FABRIC_CA_CLIENT_HOME=/tmp/hyperledger/ez/ca/admin
 
 fabric-ca-client enroll -d -u https://rca-ez-admin:rca-ez-adminpw@0.0.0.0:7055
-sleep 50
+sleep 5
 
 fabric-ca-client register -d --id.name peer1-ez --id.secret peer1PW --id.type peer -u https://0.0.0.0:7055
 fabric-ca-client register -d --id.name orderer1-ez --id.secret ordererpw --id.type orderer -u https://0.0.0.0:7055
@@ -87,7 +87,7 @@ sleep 5
 
 fabric-ca-client register -d --id.name peer1-bhx --id.secret peer1PW --id.type peer -u https://0.0.0.0:7058
 fabric-ca-client register -d --id.name orderer1-bhx --id.secret ordererpw --id.type orderer -u https://0.0.0.0:7058
-fabric-ca-client register -d --id.name admin-bhx --id.secret lhrAdminPW --id.type admin -u https://0.0.0.0:7058
+fabric-ca-client register -d --id.name admin-bhx --id.secret bhxAdminPW --id.type admin -u https://0.0.0.0:7058
 
 
 echo "Working on RCA-man"
