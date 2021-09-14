@@ -2,7 +2,7 @@ version: '2'
 
 networks:
   fabric-ca:
-    name: networkUK
+    name: test-network
 
 services:
   ca-tls:
@@ -22,23 +22,6 @@ services:
     ports:
         - 7052:7052
 
-  rca-ba:
-    container_name: rca-ba
-    image: hyperledger/fabric-ca:latest
-    command: sh -c 'fabric-ca-server start -d -b rca-ba-admin:rca-ba-adminpw --port 7054'
-    environment:
-        - FABRIC_CA_SERVER_HOME=/tmp/hyperledger/fabric-ca/crypto
-        - FABRIC_CA_SERVER_TLS_ENABLED=true
-        - FABRIC_CA_SERVER_CSR_CN=rca-ba
-        - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
-        - FABRIC_CA_SERVER_DEBUG=true
-    volumes:
-        - /tmp/hyperledger/ba/ca:/tmp/hyperledger/fabric-ca
-    networks:
-        - fabric-ca
-    ports:
-        - 7054:7054
-
   rca-ez:
     container_name: rca-ez
     image: hyperledger/fabric-ca:latest
@@ -55,6 +38,23 @@ services:
         - fabric-ca
     ports:
         - 7055:7055
+
+  rca-ba:
+    container_name: rca-ba
+    image: hyperledger/fabric-ca:latest
+    command: sh -c 'fabric-ca-server start -d -b rca-ba-admin:rca-ba-adminpw --port 7054'
+    environment:
+        - FABRIC_CA_SERVER_HOME=/tmp/hyperledger/fabric-ca/crypto
+        - FABRIC_CA_SERVER_TLS_ENABLED=true
+        - FABRIC_CA_SERVER_CSR_CN=rca-ba
+        - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
+        - FABRIC_CA_SERVER_DEBUG=true
+    volumes:
+        - /tmp/hyperledger/ba/ca:/tmp/hyperledger/fabric-ca
+    networks:
+        - fabric-ca
+    ports:
+        - 7054:7054
 
   rca-nats:
     container_name: rca-nats
@@ -455,8 +455,6 @@ services:
         - 12051:12051
     networks:
         - fabric-ca
-
-
 
   orderer1-ba:
     container_name: orderer1-ba

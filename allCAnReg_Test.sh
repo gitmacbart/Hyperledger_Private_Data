@@ -8,18 +8,14 @@ sleep 5
 
 fabric-ca-client register -d --id.name peer1-ba --id.secret peer1PW --id.type peer -u https://0.0.0.0:7052
 fabric-ca-client register -d --id.name peer1-ez --id.secret peer1PW --id.type peer -u https://0.0.0.0:7052
-
 fabric-ca-client register -d --id.name peer1-nats --id.secret peer1PW --id.type peer -u https://0.0.0.0:7052
-
 fabric-ca-client register -d --id.name peer1-lhr --id.secret peer1PW --id.type peer -u https://0.0.0.0:7052
 fabric-ca-client register -d --id.name peer1-bhx --id.secret peer1PW --id.type peer -u https://0.0.0.0:7052
 fabric-ca-client register -d --id.name peer1-man --id.secret peer1PW --id.type peer -u https://0.0.0.0:7052
 
 fabric-ca-client register -d --id.name orderer1-ba --id.secret ordererPW --id.type orderer -u https://0.0.0.0:7052
 fabric-ca-client register -d --id.name orderer1-ez --id.secret ordererPW --id.type orderer -u https://0.0.0.0:7052
-
 fabric-ca-client register -d --id.name orderer1-nats --id.secret ordererPW --id.type orderer -u https://0.0.0.0:7052
-
 fabric-ca-client register -d --id.name orderer1-lhr --id.secret ordererPW --id.type orderer -u https://0.0.0.0:7052
 fabric-ca-client register -d --id.name orderer1-bhx --id.secret ordererPW --id.type orderer -u https://0.0.0.0:7052
 fabric-ca-client register -d --id.name orderer1-man --id.secret ordererPW --id.type orderer -u https://0.0.0.0:7052
@@ -27,9 +23,7 @@ fabric-ca-client register -d --id.name orderer1-man --id.secret ordererPW --id.t
 
 fabric-ca-client register -d --id.name admin-ba --id.secret baAdminPW --id.type admin -u https://0.0.0.0:7052
 fabric-ca-client register -d --id.name admin-ez --id.secret ezAdminPW --id.type admin -u https://0.0.0.0:7052
-
 fabric-ca-client register -d --id.name admin-nats --id.secret natsAdminPW --id.type admin -u https://0.0.0.0:7052
-
 fabric-ca-client register -d --id.name admin-lhr --id.secret lhrAdminPW --id.type admin -u https://0.0.0.0:7052
 fabric-ca-client register -d --id.name admin-bhx --id.secret bhxAdminPW --id.type admin -u https://0.0.0.0:7052
 fabric-ca-client register -d --id.name admin-man --id.secret manAdminPW --id.type admin -u https://0.0.0.0:7052
@@ -40,7 +34,7 @@ export FABRIC_CA_CLIENT_TLS_CERTFILES=/tmp/hyperledger/ba/ca/crypto/ca-cert.pem
 export FABRIC_CA_CLIENT_HOME=/tmp/hyperledger/ba/ca/admin
 
 fabric-ca-client enroll -d -u https://rca-ba-admin:rca-ba-adminpw@0.0.0.0:7054
-sleep 5
+sleep 50
 
 fabric-ca-client register -d --id.name peer1-ba --id.secret peer1PW --id.type peer -u https://0.0.0.0:7054
 fabric-ca-client register -d --id.name orderer1-ba --id.secret ordererpw --id.type orderer -u https://0.0.0.0:7054
@@ -52,7 +46,7 @@ export FABRIC_CA_CLIENT_TLS_CERTFILES=/tmp/hyperledger/ez/ca/crypto/ca-cert.pem
 export FABRIC_CA_CLIENT_HOME=/tmp/hyperledger/ez/ca/admin
 
 fabric-ca-client enroll -d -u https://rca-ez-admin:rca-ez-adminpw@0.0.0.0:7055
-sleep 5
+sleep 50
 
 fabric-ca-client register -d --id.name peer1-ez --id.secret peer1PW --id.type peer -u https://0.0.0.0:7055
 fabric-ca-client register -d --id.name orderer1-ez --id.secret ordererpw --id.type orderer -u https://0.0.0.0:7055
