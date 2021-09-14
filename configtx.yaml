@@ -17,15 +17,15 @@ Organizations:
     # SampleOrg defines an MSP using the sampleconfig.  It should never be used
     # in production but may be used as a template for other definitions
 
-    - &airline
+    - &ba
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: airlineMSP
+        Name: baMSP
 
         # ID to load the MSP definition as
-        ID: airlineMSP
+        ID: baMSP
 
-        MSPDir: /tmp/hyperledger/airline/msp
+        MSPDir: /tmp/hyperledger/ba/msp
 
         # Policies defines the set of policies at this level of the config tree
         # For organization policies, their canonical path is usually
@@ -34,37 +34,77 @@ Organizations:
             Readers:
                 Type: Signature
                 # Rule: "OR('airlineMSP.admin', 'airlineMSP.peer', 'airlineMSP.client')"
-                Rule: "OR('airlineMSP.member')"
+                Rule: "OR('baMSP.member')"
             Writers:
                 Type: Signature
-                Rule: "OR('airlineMSP.member')"
+                Rule: "OR('baMSP.member')"
             Admins:
                 Type: Signature
-                Rule: "OR('airlineMSP.admin')"
+                Rule: "OR('baMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('airlineMSP.peer')"
+                Rule: "OR('baMSP.peer')"
 
         OrdererEndpoints:
-            - orderer1-airline:7050
+            - orderer1-ba:7050
 
         # leave this flag set to true.
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: peer1-airline
+            - Host: peer1-ba
               Port: 7051
 
-    - &ansp
+    - &ez
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: anspMSP
+        Name: ezMSP
 
         # ID to load the MSP definition as
-        ID: anspMSP
+        ID: ezMSP
 
-        MSPDir: /tmp/hyperledger/ansp/msp
+        MSPDir: /tmp/hyperledger/ez/msp
+
+        # Policies defines the set of policies at this level of the config tree
+        # For organization policies, their canonical path is usually
+        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+        Policies:
+            Readers:
+                Type: Signature
+                # Rule: "OR('airlineMSP.admin', 'airlineMSP.peer', 'airlineMSP.client')"
+                Rule: "OR('ezMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('ezMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('ezMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('ezMSP.peer')"
+
+        OrdererEndpoints:
+            - orderer1-ez:7050
+
+        # leave this flag set to true.
+        AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: peer1-ez
+              Port: 8051
+
+
+    - &nats
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: natsMSP
+
+        # ID to load the MSP definition as
+        ID: natsMSP
+
+        MSPDir: /tmp/hyperledger/nats/msp
 
         # Policies defines the set of policies at this level of the config tree
         # For organization policies, their canonical path is usually
@@ -73,36 +113,36 @@ Organizations:
             Readers:
                 Type: Signature
                 # Rule: "OR('anspMSP.admin', 'anspMSP.peer', 'anspMSP.client')"
-                Rule: "OR('anspMSP.member')"
+                Rule: "OR('natsMSP.member')"
             Writers:
                 Type: Signature
-                Rule: "OR('anspMSP.member')"
+                Rule: "OR('natsMSP.member')"
             Admins:
                 Type: Signature
-                Rule: "OR('anspMSP.admin')"
+                Rule: "OR('natsMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('anspMSP.peer')"
+                Rule: "OR('natsMSP.peer')"
 
         OrdererEndpoints:
-            - orderer1-ansp:7050
+            - orderer1-nats:7050
 
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: peer1-ansp
-              Port: 8051
+            - Host: peer1-nats
+              Port: 9051
 
-    - &airport
+    - &lhr
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: airportMSP
+        Name: lhrMSP
 
         # ID to load the MSP definition as
-        ID: airportMSP
+        ID: lhrMSP
 
-        MSPDir: /tmp/hyperledger/airport/msp
+        MSPDir: /tmp/hyperledger/lhr/msp
 
         # Policies defines the set of policies at this level of the config tree
         # For organization policies, their canonical path is usually
@@ -111,26 +151,102 @@ Organizations:
             Readers:
                 Type: Signature
                 # Rule: "OR('airportMSP.admin', 'airportMSP.peer', 'airportMSP.client')"
-                Rule: "OR('airportMSP.member')"
+                Rule: "OR('lhrMSP.member')"
             Writers:
                 Type: Signature
-                Rule: "OR('airportMSP.member')"
+                Rule: "OR('lhrMSP.member')"
             Admins:
                 Type: Signature
-                Rule: "OR('airportMSP.admin')"
+                Rule: "OR('lhrMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('airportMSP.peer')"
+                Rule: "OR('lhrMSP.peer')"
 
         OrdererEndpoints:
-            - orderer1-airport:7050
+            - orderer1-lhr:7050
 
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: peer1-airport
-              Port: 9051
+            - Host: peer1-lhr
+              Port: 10051
+
+    - &bhx
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: bhxMSP
+
+        # ID to load the MSP definition as
+        ID: bhxMSP
+
+        MSPDir: /tmp/hyperledger/bhx/msp
+
+        # Policies defines the set of policies at this level of the config tree
+        # For organization policies, their canonical path is usually
+        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+        Policies:
+            Readers:
+                Type: Signature
+                # Rule: "OR('airportMSP.admin', 'airportMSP.peer', 'airportMSP.client')"
+                Rule: "OR('bhxMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('bhxMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('bhxMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('bhxMSP.peer')"
+
+        OrdererEndpoints:
+            - orderer1-bhx:7050
+
+        AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: peer1-bhx
+              Port: 11051
+
+    - &man
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: manMSP
+
+        # ID to load the MSP definition as
+        ID: manMSP
+
+        MSPDir: /tmp/hyperledger/man/msp
+
+        # Policies defines the set of policies at this level of the config tree
+        # For organization policies, their canonical path is usually
+        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+        Policies:
+            Readers:
+                Type: Signature
+                # Rule: "OR('airportMSP.admin', 'airportMSP.peer', 'airportMSP.client')"
+                Rule: "OR('manMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('manMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('manMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('manMSP.peer')"
+
+        OrdererEndpoints:
+            - orderer1-man:7050
+
+        AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: peer1-man
+              Port: 12051
 
 ################################################################################
 #
@@ -232,25 +348,25 @@ Application: &ApplicationDefaults
 #   genesis block for orderer related parameters
 #
 ################################################################################
-Orderer: &OrdererDefaults
+Orderer: &OrdererUKAirspace
 
     # Orderer Type: The orderer implementation to start
     OrdererType: etcdraft
 
     EtcdRaft:
         Consenters:
-        - Host: orderer1-airline
+        - Host: orderer1-nats
           Port: 7050
-          ClientTLSCert: /tmp/hyperledger/airline/orderer1/tls-msp/signcerts/cert.pem
-          ServerTLSCert: /tmp/hyperledger/airline/orderer1/tls-msp/signcerts/cert.pem
-        - Host: orderer1-ansp
+          ClientTLSCert: /tmp/hyperledger/nats/orderer1/tls-msp/signcerts/cert.pem
+          ServerTLSCert: /tmp/hyperledger/nats/orderer1/tls-msp/signcerts/cert.pem
+        - Host: orderer1-ba
           Port: 7050
-          ClientTLSCert: /tmp/hyperledger/ansp/orderer1/tls-msp/signcerts/cert.pem
-          ServerTLSCert: /tmp/hyperledger/ansp/orderer1/tls-msp/signcerts/cert.pem
-        - Host: orderer1-airport
+          ClientTLSCert: /tmp/hyperledger/ba/orderer1/tls-msp/signcerts/cert.pem
+          ServerTLSCert: /tmp/hyperledger/ba/orderer1/tls-msp/signcerts/cert.pem
+        - Host: orderer1-ez
           Port: 7050
-          ClientTLSCert: /tmp/hyperledger/airport/orderer1/tls-msp/signcerts/cert.pem
-          ServerTLSCert: /tmp/hyperledger/airport/orderer1/tls-msp/signcerts/cert.pem
+          ClientTLSCert: /tmp/hyperledger/ez/orderer1/tls-msp/signcerts/cert.pem
+          ServerTLSCert: /tmp/hyperledger/ez/orderer1/tls-msp/signcerts/cert.pem
 
     # Batch Timeout: The amount of time to wait before creating a batch
     BatchTimeout: 2s
@@ -292,6 +408,69 @@ Orderer: &OrdererDefaults
         BlockValidation:
             Type: ImplicitMeta
             Rule: "ANY Writers"
+
+Orderer: &OrdererUKAirports
+
+    # Orderer Type: The orderer implementation to start
+    OrdererType: etcdraft
+
+    EtcdRaft:
+        Consenters:
+        - Host: orderer1-lhr
+          Port: 7050
+          ClientTLSCert: /tmp/hyperledger/lhr/orderer1/tls-msp/signcerts/cert.pem
+          ServerTLSCert: /tmp/hyperledger/lhr/orderer1/tls-msp/signcerts/cert.pem
+        - Host: orderer1-bhx
+          Port: 7050
+          ClientTLSCert: /tmp/hyperledger/bhx/orderer1/tls-msp/signcerts/cert.pem
+          ServerTLSCert: /tmp/hyperledger/bhx/orderer1/tls-msp/signcerts/cert.pem
+        - Host: orderer1-man
+          Port: 7050
+          ClientTLSCert: /tmp/hyperledger/man/orderer1/tls-msp/signcerts/cert.pem
+          ServerTLSCert: /tmp/hyperledger/man/orderer1/tls-msp/signcerts/cert.pem
+
+    # Batch Timeout: The amount of time to wait before creating a batch
+    BatchTimeout: 2s
+
+    # Batch Size: Controls the number of messages batched into a block
+    BatchSize:
+
+        # Max Message Count: The maximum number of messages to permit in a batch
+        MaxMessageCount: 10
+
+        # Absolute Max Bytes: The absolute maximum number of bytes allowed for
+        # the serialized messages in a batch.
+        AbsoluteMaxBytes: 99 MB
+
+        # Preferred Max Bytes: The preferred maximum number of bytes allowed for
+        # the serialized messages in a batch. A message larger than the preferred
+        # max bytes will result in a batch larger than preferred max bytes.
+        PreferredMaxBytes: 512 KB
+
+    # Organizations is the list of orgs which are defined as participants on
+    # the orderer side of the network
+    Organizations:
+
+    # Policies defines the set of policies at this level of the config tree
+    # For Orderer policies, their canonical path is
+    #   /Channel/Orderer/<PolicyName>
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        # BlockValidation specifies what signatures must be included in the block
+        # from the orderer for the peer to validate it.
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+
+
 
 ################################################################################
 #
@@ -335,22 +514,42 @@ Channel: &ChannelDefaults
 ################################################################################
 Profiles:
 
-    SampleAppChannelEtcdRaft:
-        Consortium: NewAFTN
+    UKAirspaceProfil:
+        Consortium: UKAirspace
         <<: *ChannelDefaults
         Orderer:
-            <<: *OrdererDefaults
+            <<: *OrdererUKAirspace
             Organizations:
-                - *airline
-                - *ansp
-                - *airport
+                - *nats
+                - *ba
+                - *ez
             Capabilities:
                 <<: *OrdererCapabilities
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                - *airline
-                - *ansp
-                - *airport
+                - *nats
+                - *ba
+                - *ez
+            Capabilities:
+                <<: *ApplicationCapabilities
+
+    UKAirportsProfil:
+        Consortium: UKAirports
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererUKAirports
+            Organizations:
+                - *lhr
+                - *bhx
+                - *man
+            Capabilities:
+                <<: *OrdererCapabilities
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *lhr
+                - *bhx
+                - *man
             Capabilities:
                 <<: *ApplicationCapabilities
