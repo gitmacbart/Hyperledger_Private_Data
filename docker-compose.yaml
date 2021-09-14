@@ -153,7 +153,7 @@ services:
         - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
         - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/ba/peer1/msp
         - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=networkUK
+        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=test-network
         - FABRIC_LOGGING_SPEC=info
         - CORE_PEER_TLS_ENABLED=true
         - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/ba/peer1/tls-msp/signcerts/cert.pem
@@ -208,7 +208,7 @@ services:
         - CORE_PEER_LISTENADDRESS=0.0.0.0:8051
         - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/ez/peer1/msp
         - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=networkUK
+        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=test-network
         - FABRIC_LOGGING_SPEC=info
         - CORE_PEER_TLS_ENABLED=true
         - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/ez/peer1/tls-msp/signcerts/cert.pem
@@ -263,7 +263,7 @@ services:
         - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
         - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/nats/peer1/msp
         - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=networkUK
+        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=test-network
         - FABRIC_LOGGING_SPEC=info
         - CORE_PEER_TLS_ENABLED=true
         - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/nats/peer1/tls-msp/signcerts/cert.pem
@@ -318,7 +318,7 @@ services:
         - CORE_PEER_LISTENADDRESS=0.0.0.0:10051
         - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/lhr/peer1/msp
         - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=networkUK
+        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=test-network
         - FABRIC_LOGGING_SPEC=info
         - CORE_PEER_TLS_ENABLED=true
         - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/lhr/peer1/tls-msp/signcerts/cert.pem
@@ -373,7 +373,7 @@ services:
         - CORE_PEER_LISTENADDRESS=0.0.0.0:11051
         - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/bhx/peer1/msp
         - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=networkUK
+        - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=test-network
         - FABRIC_LOGGING_SPEC=info
         - CORE_PEER_TLS_ENABLED=true
         - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/bhx/peer1/tls-msp/signcerts/cert.pem
