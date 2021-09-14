@@ -1,3 +1,2 @@
-export CHANNEL_NAME=UKchannel
-export CHANNEL_PROFILE_1=UKAirspaceProfil
-export CHANNEL_PROFILE_2=UKAirportsProfil
+export CHANNEL_NAME=ukchannel
+export CHANNEL_PROFILE=UKAirspaceProfil

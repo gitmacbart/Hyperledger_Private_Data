@@ -1,0 +1,14 @@
+export HOME=/Users/arnaud/BlockChain/
+export PATH=$PATH:${HOME}/fabric-samples/bin
+export FABRIC_CFG_PATH=${HOME}/fabric-samples/config/
+export ORDERER_CA=/tmp/hyperledger/nats/orderer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_LOCALMSPID="natsMSP"
+export CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/nats/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+export CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/nats/admin/msp
+export CORE_PEER_ADDRESS=localhost:9051
+
+export CORE_ORDERER_ADDRESS=localhost:9080
+export ADMIN_TLS_CERTFILE=/tmp/hyperledger/nats/admin/tls-msp/signcerts/cert.pem
+export ADMIN_TLS_KEYFILE=/tmp/hyperledger/nats/admin/tls-msp/keystore/key.pem
