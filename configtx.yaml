@@ -348,66 +348,127 @@ Application: &ApplicationDefaults
 #   genesis block for orderer related parameters
 #
 ################################################################################
-Orderer: &OrdererUKAirspace
+Orderer: 
+    - &OrdererUKAirspace
 
-    # Orderer Type: The orderer implementation to start
-    OrdererType: etcdraft
+        # Orderer Type: The orderer implementation to start
+        OrdererType: etcdraft
 
-    EtcdRaft:
-        Consenters:
-        - Host: orderer1-nats
-          Port: 7050
-          ClientTLSCert: /tmp/hyperledger/nats/orderer1/tls-msp/signcerts/cert.pem
-          ServerTLSCert: /tmp/hyperledger/nats/orderer1/tls-msp/signcerts/cert.pem
-        - Host: orderer1-ba
-          Port: 7050
-          ClientTLSCert: /tmp/hyperledger/ba/orderer1/tls-msp/signcerts/cert.pem
-          ServerTLSCert: /tmp/hyperledger/ba/orderer1/tls-msp/signcerts/cert.pem
-        - Host: orderer1-lhr
-          Port: 7050
-          ClientTLSCert: /tmp/hyperledger/lhr/orderer1/tls-msp/signcerts/cert.pem
-          ServerTLSCert: /tmp/hyperledger/lhr/orderer1/tls-msp/signcerts/cert.pem
+        EtcdRaft:
+            Consenters:
+            - Host: orderer1-nats
+              Port: 7050
+              ClientTLSCert: /tmp/hyperledger/nats/orderer1/tls-msp/signcerts/cert.pem
+              ServerTLSCert: /tmp/hyperledger/nats/orderer1/tls-msp/signcerts/cert.pem
+            - Host: orderer1-ba
+              Port: 7050
+              ClientTLSCert: /tmp/hyperledger/ba/orderer1/tls-msp/signcerts/cert.pem
+              ServerTLSCert: /tmp/hyperledger/ba/orderer1/tls-msp/signcerts/cert.pem
+            - Host: orderer1-ez
+              Port: 7050
+              ClientTLSCert: /tmp/hyperledger/ez/orderer1/tls-msp/signcerts/cert.pem
+              ServerTLSCert: /tmp/hyperledger/ez/orderer1/tls-msp/signcerts/cert.pem
 
-    # Batch Timeout: The amount of time to wait before creating a batch
-    BatchTimeout: 2s
+        # Batch Timeout: The amount of time to wait before creating a batch
+        BatchTimeout: 2s
 
-    # Batch Size: Controls the number of messages batched into a block
-    BatchSize:
+        # Batch Size: Controls the number of messages batched into a block
+        BatchSize:
 
-        # Max Message Count: The maximum number of messages to permit in a batch
-        MaxMessageCount: 10
+            # Max Message Count: The maximum number of messages to permit in a batch
+            MaxMessageCount: 10
 
-        # Absolute Max Bytes: The absolute maximum number of bytes allowed for
-        # the serialized messages in a batch.
-        AbsoluteMaxBytes: 99 MB
+            # Absolute Max Bytes: The absolute maximum number of bytes allowed for
+            # the serialized messages in a batch.
+            AbsoluteMaxBytes: 99 MB
 
-        # Preferred Max Bytes: The preferred maximum number of bytes allowed for
-        # the serialized messages in a batch. A message larger than the preferred
-        # max bytes will result in a batch larger than preferred max bytes.
-        PreferredMaxBytes: 512 KB
+            # Preferred Max Bytes: The preferred maximum number of bytes allowed for
+            # the serialized messages in a batch. A message larger than the preferred
+            # max bytes will result in a batch larger than preferred max bytes.
+            PreferredMaxBytes: 512 KB
 
-    # Organizations is the list of orgs which are defined as participants on
-    # the orderer side of the network
-    Organizations:
+        # Organizations is the list of orgs which are defined as participants on
+        # the orderer side of the network
+        Organizations:
 
-    # Policies defines the set of policies at this level of the config tree
-    # For Orderer policies, their canonical path is
-    #   /Channel/Orderer/<PolicyName>
-    Policies:
-        Readers:
-            Type: ImplicitMeta
-            Rule: "ANY Readers"
-        Writers:
-            Type: ImplicitMeta
-            Rule: "ANY Writers"
-        Admins:
-            Type: ImplicitMeta
-            Rule: "MAJORITY Admins"
-        # BlockValidation specifies what signatures must be included in the block
-        # from the orderer for the peer to validate it.
-        BlockValidation:
-            Type: ImplicitMeta
-            Rule: "ANY Writers"
+        # Policies defines the set of policies at this level of the config tree
+        # For Orderer policies, their canonical path is
+        #   /Channel/Orderer/<PolicyName>
+        Policies:
+            Readers:
+                Type: ImplicitMeta
+                Rule: "ANY Readers"
+            Writers:
+                Type: ImplicitMeta
+                Rule: "ANY Writers"
+            Admins:
+                Type: ImplicitMeta
+                Rule: "MAJORITY Admins"
+            # BlockValidation specifies what signatures must be included in the block
+            # from the orderer for the peer to validate it.
+            BlockValidation:
+                Type: ImplicitMeta
+                Rule: "ANY Writers"
+
+    - &OrdererUKAirports
+
+        # Orderer Type: The orderer implementation to start
+        OrdererType: etcdraft
+
+        EtcdRaft:
+            Consenters:
+            - Host: orderer1-lhr
+              Port: 7050
+              ClientTLSCert: /tmp/hyperledger/lhr/orderer1/tls-msp/signcerts/cert.pem
+              ServerTLSCert: /tmp/hyperledger/lhr/orderer1/tls-msp/signcerts/cert.pem
+            - Host: orderer1-bhx
+              Port: 7050
+              ClientTLSCert: /tmp/hyperledger/bhx/orderer1/tls-msp/signcerts/cert.pem
+              ServerTLSCert: /tmp/hyperledger/bhx/orderer1/tls-msp/signcerts/cert.pem
+            - Host: orderer1-man
+              Port: 7050
+              ClientTLSCert: /tmp/hyperledger/man/orderer1/tls-msp/signcerts/cert.pem
+              ServerTLSCert: /tmp/hyperledger/man/orderer1/tls-msp/signcerts/cert.pem
+        # Batch Timeout: The amount of time to wait before creating a batch
+        BatchTimeout: 2s
+
+        # Batch Size: Controls the number of messages batched into a block
+        BatchSize:
+
+            # Max Message Count: The maximum number of messages to permit in a batch
+            MaxMessageCount: 10
+
+            # Absolute Max Bytes: The absolute maximum number of bytes allowed for
+            # the serialized messages in a batch.
+            AbsoluteMaxBytes: 99 MB
+
+            # Preferred Max Bytes: The preferred maximum number of bytes allowed for
+            # the serialized messages in a batch. A message larger than the preferred
+            # max bytes will result in a batch larger than preferred max bytes.
+            PreferredMaxBytes: 512 KB
+
+        # Organizations is the list of orgs which are defined as participants on
+        # the orderer side of the network
+        Organizations:
+
+        # Policies defines the set of policies at this level of the config tree
+        # For Orderer policies, their canonical path is
+        #   /Channel/Orderer/<PolicyName>
+        Policies:
+            Readers:
+                Type: ImplicitMeta
+                Rule: "ANY Readers"
+            Writers:
+                Type: ImplicitMeta
+                Rule: "ANY Writers"
+            Admins:
+                Type: ImplicitMeta
+                Rule: "MAJORITY Admins"
+            # BlockValidation specifies what signatures must be included in the block
+            # from the orderer for the peer to validate it.
+            BlockValidation:
+                Type: ImplicitMeta
+                Rule: "ANY Writers"
 
 ################################################################################
 #
@@ -452,24 +513,41 @@ Channel: &ChannelDefaults
 Profiles:
 
     UKAirspaceProfil:
-        Consortium: UKAirspace
         <<: *ChannelDefaults
         Orderer:
             <<: *OrdererUKAirspace
             Organizations:
                 - *nats
                 - *ba
-                - *lhr
+                - *ez
             Capabilities:
                 <<: *OrdererCapabilities
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                - *nats
+                - *ba
+                - *ez
+                - *nats                
+            Capabilities:
+                <<: *ApplicationCapabilities
+
+    UKAirportsProfil:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererUKAirspace
+            Organizations:
+                - *lhr
+                - *bhx
+                - *man
+            Capabilities:
+                <<: *OrdererCapabilities
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
                 - *ba
                 - *ez
                 - *lhr
                 - *bhx
-                - *man
+                - *man                
             Capabilities:
                 <<: *ApplicationCapabilities

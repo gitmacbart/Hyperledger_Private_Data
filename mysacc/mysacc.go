@@ -48,10 +48,6 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	var err error
 	if fn == "set" {
 		result, err = set(stub, args)
-	} else if fn == "setPrivateOrg1" {
-		result, err = setPrivateOrg1(stub, args)
-	} else if fn == "getPrivateOrg1" {
-		result, err = getPrivateOrg1(stub, args)
 	} else { // assume 'get' even if fn is nil
 		result, err = get(stub, args)
 	}
@@ -77,18 +73,6 @@ func set(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	return args[1], nil
 }
 
-func setPrivateOrg1(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	if len(args) != 2 {
-		return "", fmt.Errorf("Incorrect arguments. Expecting a key and a value")
-	}
-
-	err := stub.PutPrivateData("_implicit_org_Org1MSP", args[0], []byte(args[1]))
-	if err != nil {
-		return "", fmt.Errorf("Failed to set asset: %s", args[0])
-	}
-	return args[1], nil
-}
-
 // Get returns the value of the specified asset key
 func get(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	if len(args) != 1 {
@@ -106,20 +90,6 @@ func get(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 }
 
 // Get returns the value of the specified asset key
-func getPrivateOrg1(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	if len(args) != 1 {
-		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
-	}
-
-	value, err := stub.GetPrivateData("_implicit_org_Org1MSP", args[0])
-	if err != nil {
-		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
-	}
-	if value == nil {
-		return "", fmt.Errorf("Asset not found: %s", args[0])
-	}
-	return string(value), nil
-}
 
 // main function starts up the chaincode in the container during instantiate
 func main() {
