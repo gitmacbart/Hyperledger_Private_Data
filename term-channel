@@ -1,2 +1,0 @@
-export CHANNEL_NAME=testchannel
-export CHANNEL_PROFILE=SampleAppChannelEtcdRaft
