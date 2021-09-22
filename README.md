@@ -1,8 +1,5 @@
 # Hyperledger Topology different channels
 
-Reusing a lot from https://github.com/kctam my reference
-
-
 Network is: 
 - 6 members (
 		Airlines [BA,EZ] 
@@ -40,8 +37,9 @@ docker network prune
  ./enrollAllOrgs.sh
   docker-compose up -d
 ```
+# Build the Channel channelairspace [BA, EZ, NATS]
 
-## Build the Channel channelairspace [BA, EZ, NATS] & join the peer(s)
+## Join the peer(s)
 ```
 source term-channels
 source term-ba
@@ -96,7 +94,7 @@ Package chaincode as below
 peer lifecycle chaincode package fpl.tar.gz --path /Users/arnaud/BlockChain/FabricLabs/Hyperledger_Private_Data/fpl --label fpl_1
 ```
 
-## Install fpl chaincode on ba, ez and nats peers
+# Install fpl chaincode on ba, ez and nats peers
 
 ```
 source term-ba
@@ -158,5 +156,86 @@ As per docker-compose.yaml definition (username admin password adminpw)
 > http://localhost:8984/_utils/#/_all_dbs for ez
 > http://localhost:9984/_utils/#/_all_dbs for nats
 
-Regards
-Arnaud
+
+# Build the Channel channelairports [BA, EZ, LHR, BHX, MAN]
+
+## Join the peer(s)
+```
+source term-channels
+source term-lhr
+
+configtxgen -profile ${CHANNEL_PROFILE_2} -configPath ${PWD} -outputBlock ${CHANNEL_NAME_2}.block -channelID ${CHANNEL_NAME_2}
+```
+
+```
+source term-lhr
+osnadmin channel join --channelID ${CHANNEL_NAME_2} --config-block ${CHANNEL_NAME_2}.block -o $CORE_ORDERER_ADDRESS --ca-file $ORDERER_CA --client-cert $ADMIN_TLS_CERTFILE  --client-key $ADMIN_TLS_KEYFILE
+```
+
+And join the ba peer to the channel channelairports
+```
+peer channel join -b ${CHANNEL_NAME_2}.block
+```
+Repeat this for bhx, man, ba and ez
+
+## Package Fchain chaincode
+
+Fchain functions as follow:
+```
+	if fn == "set" {
+		result, err = set(stub, args)
+	} else if fn == "getFPLpublic" {
+		result, err = getFPLpublic(stub, args)
+	} else if fn == "getFPLprivateasBA" {
+		result, err = getFPLprivateasBA(stub, args)
+	} else if fn == "getFPLprivateasEZ" {
+		result, err = getFPLprivateasBA(stub, args)
+	} else { // assume 'get' even if fn is nil
+		result, err = get(stub, args)
+	}
+```
+
+Package chaincode as below
+```
+peer lifecycle chaincode package fchain.tar.gz --path /Users/arnaud/BlockChain/FabricLabs/Hyperledger_Private_Data/fchain --label fchain_1
+```
+
+# Install fchain chaincode on lhr, bhx, man, ba and ez peers
+
+```
+source term-lhr
+peer lifecycle chaincode install fchain.tar.gz
+```
+Repeat this for bhx, man,ba and ez.
+
+## Approve Chaincode
+
+package-id is an output of chaincode installation above
+
+```
+source term-lhr
+
+peer lifecycle chaincode approveformyorg --tls --cafile $ORDERER_CA -o localhost:10050 --channelID $CHANNEL_NAME_2 --name fchaincc --version 1 --sequence 1  --init-required --waitForEvent --signature-policy "OR ('baMSP.peer','lhrMSP.peer','ezMSP.peer','bhxMSP.peer','manMSP.peer')" --package-id fchain_2:072c8761a8b663965b98b4d95e1803ead880a9d9c566e55f58d4195154e1e2f0
+
+```
+Repeat this for bhx, man,ba and ez.
+
+## Commit Chaincode
+
+```
+source term-lhr
+
+peer lifecycle chaincode commit --tls --cafile $ORDERER_CA -o localhost:10050 --peerAddresses $CORE_PEER_ADDRESS --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE --peerAddresses localhost:11051 --tlsRootCertFiles /tmp/hyperledger/bhx/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem --peerAddresses localhost:12051 --tlsRootCertFiles /tmp/hyperledger/man/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem --channelID $CHANNEL_NAME_2 --name fchaincc --version 1 --sequence 1  --init-required  --signature-policy "OR ('baMSP.peer','lhrMSP.peer','ezMSP.peer','bhxMSP.peer','manMSP.peer')"
+
+```
+And 3 containers for chaincode are started
+
+## Init Chaincode
+
+```
+peer chaincode invoke -o localhost:10050 --ordererTLSHostnameOverride orderer1-lhr --tls true --cafile $ORDERER_CA --peerAddresses localhost:10051 --tlsRootCertFiles /tmp/hyperledger/lhr/peer1/assets/tls-ca/tls-ca-cert.pem  --channelID $CHANNEL_NAME_2 --name fchaincc --isInit -c '{"Args":["2021-09-04ZAGBA0872","Created"]}'
+```
+
+```
+peer chaincode query --channelID $CHANNEL_NAME_2 --name fchaincc -c '{"Args":["getFPLpublic","2021-10-03ZAGBA0872"]}'
+```
