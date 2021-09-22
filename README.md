@@ -41,7 +41,7 @@ docker network prune
   docker-compose up -d
 ```
 
-## Build the Channel UK_Airspace [BA, EZ, NATS] & join the peer(s)
+## Build the Channel channelairspace [BA, EZ, NATS] & join the peer(s)
 ```
 source term-channels
 source term-ba
@@ -62,140 +62,101 @@ Status: 201
         "status": "active",
         "height": 1
 }
+
+And join the ba peer to the channel channelairspace
 ```
 peer channel join -b ${CHANNEL_NAME_1}.block
 ```
-Output is 
-2021-09-21 11:39:42.940 CEST [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
-2021-09-21 11:39:43.096 CEST [channelCmd] executeJoin -> INFO 002 Successfully submitted proposal to join channe
-
-```
-source term-ez
-osnadmin channel join --channelID ${CHANNEL_NAME_1} --config-block ${CHANNEL_NAME_1}.block -o $CORE_ORDERER_ADDRESS --ca-file $ORDERER_CA --client-cert $ADMIN_TLS_CERTFILE  --client-key $ADMIN_TLS_KEYFILE
-peer channel join -b ${CHANNEL_NAME_1}.block
-
-source term-nats
-osnadmin channel join --channelID ${CHANNEL_NAME_1} --config-block ${CHANNEL_NAME_1}.block -o $CORE_ORDERER_ADDRESS --ca-file $ORDERER_CA --client-cert $ADMIN_TLS_CERTFILE  --client-key $ADMIN_TLS_KEYFILE
-peer channel join -b ${CHANNEL_NAME_1}.block
-```
-
-## Join the peer(s)
-```
-source term-airline
-peer channel join -b ${CHANNEL_NAME}.block
-```
-output is
-```
-2021-08-04 14:20:54.619 CEST [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
-2021-08-04 14:20:54.758 CEST [channelCmd] executeJoin -> INFO 002 Successfully submitted proposal to join channel
-```
-join also for ansp and airport members
-```
-source term-ansp
-peer channel join -b ${CHANNEL_NAME}.block
-
-source term-airport
-peer channel join -b ${CHANNEL_NAME}.block
-```
+Repeat this for ez and nats
 
 ## Package FPL chaincode
 
-sacc example modified as follow:
+FPL functions as follow:
 ```
 	if fn == "set" {
 		result, err = set(stub, args)
-	} else if fn == "setPrivateAFTN" {
-		result, err = setPrivateAFTN(stub, args)
-	} else if fn == "setPrivateAirline" {
-		result, err = setPrivateAirline(stub, args)
-	} else if fn == "setPrivateAnsp" {
-		result, err = setPrivateAnsp(stub, args)
-	} else if fn == "getPrivate" {
-		result, err = getPrivate(stub, args)
-	} else if fn == "getPrivateAirline" {
-		result, err = getPrivateAirline(stub, args)
-	} else if fn == "getPrivateAnsp" {
-		result, err = getPrivateAnsp(stub, args)
+	} else if fn == "setFPL" {
+		result, err = setFPL(stub, args)
+	} else if fn == "getFPL" {
+		result, err = getFPL(stub, args)
+	} else if fn == "getFPLasBA" {
+		result, err = getFPLasBA(stub, args)
+	} else if fn == "getFPLasEZ" {
+		result, err = getFPLasEZ(stub, args)
+	} else { // assume 'get' even if fn is nil
+		result, err = get(stub, args)
+	}
+	if err != nil {
+		return shim.Error(err.Error())
+	}
 ```
 
-Command is:
+Package chaincode as below
 ```
 peer lifecycle chaincode package fpl.tar.gz --path /Users/arnaud/BlockChain/FabricLabs/Hyperledger_Private_Data/fpl --label fpl_1
 ```
-Outcome is aftn.tar.gz file
 
-## Install aftn chaincode
-
-```
-source term-airline
-peer lifecycle chaincode install aftn.tar.gz
-```
-outputs is 
-
-> 2021-08-04 14:31:20.797 CEST [cli.lifecycle.chaincode] submitInstallProposal -> INFO 001 Installed remotely: response:<status:200
-> 2021-08-04 14:31:20.797 CEST [cli.lifecycle.chaincode] submitInstallProposal -> INFO 002 Chaincode code package identifier: **aftn_1:515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de**
+## Install fpl chaincode on ba, ez and nats peers
 
 ```
-source term-ansp
-peer lifecycle chaincode install aftn.tar.gz
-
-source term-airport
-peer lifecycle chaincode install aftn.tar.gz
+source term-ba
+peer lifecycle chaincode install fpl.tar.gz
 ```
+Repeat this for ez and nats
 
 ## Approve Chaincode
+
+package-id is an output of chaincode installation above
 
 ```
 source term-ba
 
 peer lifecycle chaincode approveformyorg --tls --cafile $ORDERER_CA -o localhost:7050 --channelID $CHANNEL_NAME_1 --name fplcc --version 1 --init-required --sequence 1 --waitForEvent --signature-policy "OR ('baMSP.peer','natsMSP.peer','ezMSP.peer')" --collections-config collection_airspace.json --package-id fpl_1:c18af9a084a4b9baa6911ea40cb5501d1ebd9691403e4e063ef475a47370168a
 
-
 ```
+Repeat this for ez and nats
+
+Note:
+--signature-policy "OR ('baMSP.peer','natsMSP.peer','ezMSP.peer')" to supersede the endorsement policy to have only one member to invoke a transaction 
 
 ## Commit Chaincode
 
 ```
-source term-airline
+source term-ba
 
 peer lifecycle chaincode commit --tls --cafile $ORDERER_CA -o localhost:7050 --peerAddresses $CORE_PEER_ADDRESS --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE --peerAddresses localhost:9051 --tlsRootCertFiles /tmp/hyperledger/nats/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem --peerAddresses localhost:8051 --tlsRootCertFiles /tmp/hyperledger/ez/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem --channelID $CHANNEL_NAME_1 --name fplcc --version 1 --sequence 1  --init-required --signature-policy "OR ('baMSP.peer','natsMSP.peer','ezMSP.peer')" --collections-config collection_airspace.json
 
 ```
-Output is
-
->2021-08-04 14:50:09.976 CEST [chaincodeCmd] ClientWait -> INFO 001 txid >[eb38dd44f4dd8f9bd0f6334b49735046dddf2724f1b9e2a665066f8e81ed6e39] committed with status (VALID) at localhost:7051
->2021-08-04 14:50:10.024 CEST [chaincodeCmd] ClientWait -> INFO 002 txid [eb38dd44f4dd8f9bd0f6334b49735046dddf2724f1b9e2a665066f8e81ed6e39] committed with status (VALID) at localhost:8051
-
-And 3 containers are started as below
-
->dev-peer1-airport-aftn_1-515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de-67611a118fa520f369591024e31a015adc67febb07fdce398bbe6a84b6e625aa   "chaincode -peer.add…"   42 seconds ago      Up 41 seconds                                                                                             dev-peer1-airport-aftn_1-515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de
-
->dev-peer1-ansp-aftn_1-515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de-de0937db2d44b1502fb40be2e5bfe660cbc98c6b7bbd6052c25065f66ecbb147      "chaincode -peer.add…"   42 seconds ago      Up 41 seconds                                                                                             dev-peer1-ansp-aftn_1-515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de
-
->dev-peer1-airline-aftn_1-515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de-01e694ca5cff2016a3062ec072cc1ab23b4f28601cb6b3699fcd455415bf145c   "chaincode -peer.add…"   42 seconds ago      Up 41 seconds                                                                                             dev-peer1-airline-aftn_1-515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de
-
-
+And 3 containers for chaincode are started
 
 ## Init Chaincode
 
 ```
-peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer1-airline --tls true --cafile $ORDERER_CA --peerAddresses localhost:7051 --tlsRootCertFiles /tmp/hyperledger/airline/peer1/assets/tls-ca/tls-ca-cert.pem --peerAddresses localhost:8051 --tlsRootCertFiles /tmp/hyperledger/ansp/peer1/assets/tls-ca/tls-ca-cert.pem --channelID $CHANNEL_NAME --name aftncc --isInit -c '{"Args":["2021-08-04ZAGBA0849","Created"]}'
+peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer1-ba --tls true --cafile $ORDERER_CA --peerAddresses localhost:7051 --tlsRootCertFiles /tmp/hyperledger/ba/peer1/assets/tls-ca/tls-ca-cert.pem --channelID $CHANNEL_NAME_1 --name fplcc --isInit -c '{"Args":["2021-08-04ZAGBA0849","Created"]}' 
 ```
 > That will create the state database on each nodes
 
 ```
-peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer1-airline --tls true --cafile $ORDERER_CA --peerAddresses localhost:7051 --tlsRootCertFiles /tmp/hyperledger/airline/peer1/assets/tls-ca/tls-ca-cert.pem --peerAddresses localhost:8051 --tlsRootCertFiles /tmp/hyperledger/ansp/peer1/assets/tls-ca/tls-ca-cert.pem --channelID $CHANNEL_NAME --name aftncc -c '{"Args":["setPrivateAFTN","2021-08-03ZAGBA0849","RouteText:N0441F380 PODET DCT INGID DCT SIMBA"]}'
+peer chaincode invoke -o localhost:9050 --ordererTLSHostnameOverride orderer1-nats --tls true --cafile $ORDERER_CA --peerAddresses localhost:9051 --tlsRootCertFiles /tmp/hyperledger/nats/peer1/assets/tls-ca/tls-ca-cert.pem  --channelID $CHANNEL_NAME_1 --name fplcc -c '{"Args":["setFPL","2021-10-03ZAGBA0876","flight plan public RouteText:N0441F380  ","flight plan private RouteText:PODET DCT INGID DCT SIMBA","ez"]}'
 ```
 
 > That will create private and/or hash databases as referred in the private collection definition
 
-## Observe Databases on each member node
+```
+       "name": "natsba",
+       "policy": "OR('baMSP.member', 'natsMSP.member')",
+
+        "name": "natsez",
+        "policy": "OR('ezMSP.member', 'natsMSP.member')",
+```
+
+## Observe Databases
 
 As per docker-compose.yaml definition (username admin password adminpw)
 
-> http://localhost:7984/_utils/#/_all_dbs for airline
-> http://localhost:8984/_utils/#/_all_dbs for ansp
-> http://localhost:9984/_utils/#/_all_dbs for airport
+> http://localhost:7984/_utils/#/_all_dbs for ba
+> http://localhost:8984/_utils/#/_all_dbs for ez
+> http://localhost:9984/_utils/#/_all_dbs for nats
 
 Regards
 Arnaud
