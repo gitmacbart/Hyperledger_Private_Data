@@ -4,74 +4,59 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+ //--- arnaud.bart@sita.aero ----
+
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-protos-go/peer"
 )
 
-// SimpleAsset implements a simple chaincode to manage an asset
 type SimpleAsset struct {
 }
 
-// Init is called during chaincode instantiation to initialize any
-// data. Note that chaincode upgrade also calls this function to reset
-// or to migrate data.
+//----Init----------------------------------------------------------------------------------
+
 func (t *SimpleAsset) Init(stub shim.ChaincodeStubInterface) peer.Response {
-	// Get the args from the transaction proposal
 	args := stub.GetStringArgs()
 	if len(args) != 2 {
 		return shim.Error("Incorrect arguments. Expecting a key and a value")
 	}
-
-	// Set up any variables or assets here by calling stub.PutState()
-
-	// We store the key and the value on the ledger
 	err := stub.PutState(args[0], []byte(args[1]))
 	if err != nil {
 		return shim.Error(fmt.Sprintf("Failed to create asset: %s", args[0]))
 	}
 	return shim.Success(nil)
 }
+//------------------------------------------------------------------------------------------
 
-// Invoke is called per transaction on the chaincode. Each transaction is
-// either a 'get' or a 'set' on the asset created by Init function. The Set
-// method may create a new asset by specifying a new key-value pair.
+//----Invoke---------------------------------------------------------------------------------
 func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
-	// Extract the function and args from the transaction proposal
 	fn, args := stub.GetFunctionAndParameters()
-
 	var result string
 	var err error
 	if fn == "set" {
 		result, err = set(stub, args)
-	} else if fn == "setPrivate" {
-		result, err = setPrivate(stub, args)
-	} else if fn == "setPrivateOrg1" {
-		result, err = setPrivateOrg1(stub, args)
-	} else if fn == "setPrivateTransient" {
-		result, err = setPrivateTransient(stub, args)
-	} else if fn == "getPrivate" {
-		result, err = getPrivate(stub, args)
-	} else if fn == "getPrivateOrg1" {
-		result, err = getPrivateOrg1(stub, args)
+	} else if fn == "getFPLpublic" {
+		result, err = getFPLpublic(stub, args)
+	} else if fn == "getFPLprivateasBA" {
+		result, err = getFPLprivateasBA(stub, args)
+	} else if fn == "getFPLprivateasEZ" {
+		result, err = getFPLprivateasBA(stub, args)
 	} else { // assume 'get' even if fn is nil
 		result, err = get(stub, args)
 	}
 	if err != nil {
 		return shim.Error(err.Error())
 	}
-
-	// Return the result as success payload
 	return shim.Success([]byte(result))
 }
+//------------------------------------------------------------------------------------------
 
-// Set stores the asset (both key and value) on the ledger. If the key exists,
-// it will override the value with the new one
+//----Set----------------------------------------------------------------------------------
 func set(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	if len(args) != 2 {
 		return "", fmt.Errorf("Incorrect arguments. Expecting a key and a value")
@@ -83,67 +68,9 @@ func set(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	}
 	return args[1], nil
 }
+//------------------------------------------------------------------------------------------
 
-func setPrivate(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	if len(args) != 2 {
-		return "", fmt.Errorf("Incorrect arguments. Expecting a key and a value")
-	}
-
-	err := stub.PutPrivateData("aftn", args[0], []byte(args[1]))
-	if err != nil {
-		return "", fmt.Errorf("Failed to set asset: %s", args[0])
-	}
-	return args[1], nil
-}
-
-func setPrivateOrg1(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	if len(args) != 2 {
-		return "", fmt.Errorf("Incorrect arguments. Expecting a key and a value")
-	}
-
-	err := stub.PutPrivateData("_implicit_org_org1MSP", args[0], []byte(args[1]))
-	if err != nil {
-		return "", fmt.Errorf("Failed to set asset: %s", args[0])
-	}
-	return args[1], nil
-}
-
-func setPrivateTransient(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-
-	type keyValueTransientInput struct {
-		Key   string `json:"key"`
-		Value string `json:"value"`
-	}
-
-	if len(args) != 0 {
-		return "", fmt.Errorf("Incorrect arguments. Expecting no data when using transient")
-	}
-
-	transMap, err := stub.GetTransient()
-	if err != nil {
-		return "", fmt.Errorf("Failed to get transient")
-	}
-
-	// assuming only "name" is processed
-	keyValueAsBytes, ok := transMap["keyvalue"]
-	if !ok {
-		return "", fmt.Errorf("key must be keyvalue")
-	}
-
-	var keyValueInput keyValueTransientInput
-	err = json.Unmarshal(keyValueAsBytes, &keyValueInput)
-	if err != nil {
-		return "", fmt.Errorf("Failed to decode JSON")
-	}
-
-	err = stub.PutPrivateData("aftn", keyValueInput.Key, []byte(keyValueInput.Value))
-	if err != nil {
-		return "", fmt.Errorf("Failed to set asset")
-	}
-	return keyValueInput.Value, nil
-}
-
-// Get returns the value of the specified asset key
+//----Get----------------------------------------------------------------------------------
 func get(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	if len(args) != 1 {
 		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
@@ -158,41 +85,63 @@ func get(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	}
 	return string(value), nil
 }
+//------------------------------------------------------------------------------------------
 
-// Get returns the value of the specified asset key
-func getPrivate(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	if len(args) != 1 {
-		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
+//--- Get FLP public from fplcc within channelairspace--------------------------------------
+func getFPLpublic(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+
+	params := []string{"get", args[0]}
+	queryArgs := make([][]byte, len(params))
+	for i, arg := range params {
+		queryArgs[i] = []byte(arg)
 	}
 
-	value, err := stub.GetPrivateData("aftn", args[0])
-	if err != nil {
-		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
+	response := stub.InvokeChaincode("fplcc", queryArgs, "channelairspace")
+	if response.Status != shim.OK {
+		return "", fmt.Errorf("Failed to query chaincode. Got error: %s", response.Payload)
 	}
-	if value == nil {
-		return "", fmt.Errorf("Asset not found: %s", args[0])
-	}
-	return string(value), nil
+	return string(response.Payload), nil
 }
+//------------------------------------------------------------------------------------------
 
-func getPrivateOrg1(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	if len(args) != 1 {
-		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
+//---Get FLP private as BA from fplcc within channelairspace--------------------------------
+func getFPLprivateasBA(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+
+	params := []string{"getFPLasBA", args[0]}
+	queryArgs := make([][]byte, len(params))
+	for i, arg := range params {
+		queryArgs[i] = []byte(arg)
 	}
 
-	value, err := stub.GetPrivateData("_implicit_org_org1MSP", args[0])
-	if err != nil {
-		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
+	response := stub.InvokeChaincode("fplcc", queryArgs, "channelairspace")
+	if response.Status != shim.OK {
+		return "", fmt.Errorf("Failed to query chaincode. Got error: %s", response.Payload)
 	}
-	if value == nil {
-		return "", fmt.Errorf("Asset not found: %s", args[0])
-	}
-	return string(value), nil
+	return string(response.Payload), nil
 }
+//------------------------------------------------------------------------------------------
 
-// main function starts up the chaincode in the container during instantiate
+//-----Get FLP private as EZ from fplcc within channelairspace------------------------------
+func getFPLprivateasEZ(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+
+	params := []string{"getFPLasEZ", args[0]}
+	queryArgs := make([][]byte, len(params))
+	for i, arg := range params {
+		queryArgs[i] = []byte(arg)
+	}
+
+	response := stub.InvokeChaincode("fplcc", queryArgs, "channelairspace")
+	if response.Status != shim.OK {
+		return "", fmt.Errorf("Failed to query chaincode. Got error: %s", response.Payload)
+	}
+	return string(response.Payload), nil
+}
+//------------------------------------------------------------------------------------------
+
+//-----Main---------------------------------------------------------------------------------
 func main() {
 	if err := shim.Start(new(SimpleAsset)); err != nil {
 		fmt.Printf("Error starting SimpleAsset chaincode: %s", err)
 	}
 }
+//------------------------------------------------------------------------------------------

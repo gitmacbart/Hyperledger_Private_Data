@@ -1,11 +1,20 @@
 [
     {
-       "name": "ukairspacenats",
-       "policy": "OR('baMSP.member', 'ezMSP.member', 'natsMSP.member')",
+       "name": "natsba",
+       "policy": "OR('baMSP.member', 'natsMSP.member')",
        "requiredPeerCount": 0,
-       "maxPeerCount": 3,
+       "maxPeerCount": 2,
        "blockToLive":1000000,
        "memberOnlyRead": true,
        "memberOnlyWrite": true
-    }
+    },
+    {
+        "name": "natsez",
+        "policy": "OR('ezMSP.member', 'natsMSP.member')",
+        "requiredPeerCount": 0,
+        "maxPeerCount": 2,
+        "blockToLive":1000000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true
+     }
 ]

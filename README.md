@@ -1,6 +1,31 @@
-# Hyperledger_Private_Data
-My lab when Private Data with Hyperledger Fabric
+# Hyperledger Topology different channels
+
 Reusing a lot from https://github.com/kctam my reference
+
+
+Network is: 
+- 6 members (
+		Airlines [BA,EZ] 
+		Ansp [NATS] 
+		Airports [LHR, BHX, MAN]
+
+- No system channel
+
+- 2 channels
+		UK_Airspace [BA, EZ, NATS] --> consensus is ba, ez and nats
+		UK_Airports [BA, EZ, LHR, BHX, MAN] --> consensus is lhr,bhx and man
+
+- 2 chaincodes / dlt(s)
+		FPL (flight planning)
+		OPS (Airport operations)
+		 
+Test is to have OPS cc able to query some data frpm FPL dlt
+
+Type of databases:
+	State
+	Private
+	Implicit
+
 
 ```
 rm -rf /tmp/hyperledger/*
@@ -10,31 +35,48 @@ docker network prune
 
 ## Build the network
 ```
-  docker-compose up -d rca-airline rca-ansp rca-airport ca-tls
- ./allCAnReg_UK_airspace.sh
- ./enrollAllOrgs_UK_airspace.sh
+  docker-compose up -d rca-ba rca-ez rca-nats rca-lhr rca-bhx rca-man ca-tls
+ ./allCAnReg.sh
+ ./enrollAllOrgs.sh
   docker-compose up -d
 ```
 
-## Build the Channel
+## Build the Channel UK_Airspace [BA, EZ, NATS] & join the peer(s)
 ```
-source term-aftn-channel
-source term-airline
+source term-channels
+source term-ba
 
-configtxgen -profile ${CHANNEL_PROFILE} -configPath ${PWD} -outputBlock ${CHANNEL_NAME}.block -channelID ${CHANNEL_NAME}
+configtxgen -profile ${CHANNEL_PROFILE_1} -configPath ${PWD} -outputBlock ${CHANNEL_NAME_1}.block -channelID ${CHANNEL_NAME_1}
 ```
-
-Output is aftn-channel.block file
 
 ```
-source term-airline
-osnadmin channel join --channelID ${CHANNEL_NAME} --config-block ${CHANNEL_NAME}.block -o $CORE_ORDERER_ADDRESS --ca-file $ORDERER_CA --client-cert $ADMIN_TLS_CERTFILE  --client-key $ADMIN_TLS_KEYFILE
+source term-ba
+osnadmin channel join --channelID ${CHANNEL_NAME_1} --config-block ${CHANNEL_NAME_1}.block -o $CORE_ORDERER_ADDRESS --ca-file $ORDERER_CA --client-cert $ADMIN_TLS_CERTFILE  --client-key $ADMIN_TLS_KEYFILE
+```
+Output is:
+Status: 201
+{
+        "name": "channelairspace",
+        "url": "/participation/v1/channels/channelairspace",
+        "consensusRelation": "consenter",
+        "status": "active",
+        "height": 1
+}
+```
+peer channel join -b ${CHANNEL_NAME_1}.block
+```
+Output is 
+2021-09-21 11:39:42.940 CEST [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
+2021-09-21 11:39:43.096 CEST [channelCmd] executeJoin -> INFO 002 Successfully submitted proposal to join channe
 
-source term-ansp
-osnadmin channel join --channelID ${CHANNEL_NAME} --config-block ${CHANNEL_NAME}.block -o $CORE_ORDERER_ADDRESS --ca-file $ORDERER_CA --client-cert $ADMIN_TLS_CERTFILE  --client-key $ADMIN_TLS_KEYFILE
+```
+source term-ez
+osnadmin channel join --channelID ${CHANNEL_NAME_1} --config-block ${CHANNEL_NAME_1}.block -o $CORE_ORDERER_ADDRESS --ca-file $ORDERER_CA --client-cert $ADMIN_TLS_CERTFILE  --client-key $ADMIN_TLS_KEYFILE
+peer channel join -b ${CHANNEL_NAME_1}.block
 
-source term-airport
-osnadmin channel join --channelID ${CHANNEL_NAME} --config-block ${CHANNEL_NAME}.block -o $CORE_ORDERER_ADDRESS --ca-file $ORDERER_CA --client-cert $ADMIN_TLS_CERTFILE  --client-key $ADMIN_TLS_KEYFILE
+source term-nats
+osnadmin channel join --channelID ${CHANNEL_NAME_1} --config-block ${CHANNEL_NAME_1}.block -o $CORE_ORDERER_ADDRESS --ca-file $ORDERER_CA --client-cert $ADMIN_TLS_CERTFILE  --client-key $ADMIN_TLS_KEYFILE
+peer channel join -b ${CHANNEL_NAME_1}.block
 ```
 
 ## Join the peer(s)
@@ -56,7 +98,7 @@ source term-airport
 peer channel join -b ${CHANNEL_NAME}.block
 ```
 
-## Package AFTN chaincode
+## Package FPL chaincode
 
 sacc example modified as follow:
 ```
@@ -78,7 +120,7 @@ sacc example modified as follow:
 
 Command is:
 ```
-peer lifecycle chaincode package aftn.tar.gz --path /Users/arnaud/BlockChain/FabricLabs/Hyperledger_Private_Data/aftn --label aftn_1
+peer lifecycle chaincode package fpl.tar.gz --path /Users/arnaud/BlockChain/FabricLabs/Hyperledger_Private_Data/fpl --label fpl_1
 ```
 Outcome is aftn.tar.gz file
 
@@ -104,17 +146,11 @@ peer lifecycle chaincode install aftn.tar.gz
 ## Approve Chaincode
 
 ```
-source term-airline
-peer lifecycle chaincode approveformyorg --tls --cafile $ORDERER_CA -o localhost:7050 --channelID $CHANNEL_NAME --name aftncc --version 1 --init-required --sequence 1 --waitForEvent --collections-config collection_UK_airspace.json --package-id aftn_1:515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de
-```
-> 2021-08-04 14:43:35.822 CEST [chaincodeCmd] ClientWait -> INFO 001 txid >[b646086a57388eadc107bfb777203400868d5a4f8518b63701f92c61f6bba11f] committed with status (VALID) at localhost:7051
+source term-ba
 
-```
-source term-ansp
-peer lifecycle chaincode approveformyorg --tls --cafile $ORDERER_CA -o localhost:8050 --channelID $CHANNEL_NAME --name aftncc --version 1 --init-required --sequence 1 --waitForEvent --collections-config collection_UK_airspace.json --package-id aftn_1:515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de
+peer lifecycle chaincode approveformyorg --tls --cafile $ORDERER_CA -o localhost:7050 --channelID $CHANNEL_NAME_1 --name fplcc --version 1 --init-required --sequence 1 --waitForEvent --signature-policy "OR ('baMSP.peer','natsMSP.peer','ezMSP.peer')" --collections-config collection_airspace.json --package-id fpl_1:c18af9a084a4b9baa6911ea40cb5501d1ebd9691403e4e063ef475a47370168a
 
-source term-airport
-peer lifecycle chaincode approveformyorg --tls --cafile $ORDERER_CA -o localhost:9050 --channelID $CHANNEL_NAME --name aftncc --version 1 --init-required --sequence 1 --waitForEvent --collections-config collection_UK_airspace.json --package-id aftn_1:515aa8ea1ec379ee317d4af35f6b94dff893dc631ed1a492a58eb518d203b2de
+
 ```
 
 ## Commit Chaincode
@@ -122,7 +158,8 @@ peer lifecycle chaincode approveformyorg --tls --cafile $ORDERER_CA -o localhost
 ```
 source term-airline
 
-peer lifecycle chaincode commit --tls --cafile $ORDERER_CA -o localhost:7050 --peerAddresses $CORE_PEER_ADDRESS --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE --peerAddresses localhost:8051 --tlsRootCertFiles /tmp/hyperledger/ansp/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem --channelID $CHANNEL_NAME --name aftncc --version 1 --sequence 1 --init-required --collections-config collection_UK_airspace.json
+peer lifecycle chaincode commit --tls --cafile $ORDERER_CA -o localhost:7050 --peerAddresses $CORE_PEER_ADDRESS --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE --peerAddresses localhost:9051 --tlsRootCertFiles /tmp/hyperledger/nats/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem --peerAddresses localhost:8051 --tlsRootCertFiles /tmp/hyperledger/ez/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem --channelID $CHANNEL_NAME_1 --name fplcc --version 1 --sequence 1  --init-required --signature-policy "OR ('baMSP.peer','natsMSP.peer','ezMSP.peer')" --collections-config collection_airspace.json
+
 ```
 Output is
 

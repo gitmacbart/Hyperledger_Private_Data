@@ -48,12 +48,14 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	var err error
 	if fn == "set" {
 		result, err = set(stub, args)
-	} else if fn == "setFPLmessage4EZ" {
-		result, err = setFPLmessage4EZ(stub, args)
-	} else if fn == "getPrivate" {
-		result, err = getPrivate(stub, args)
-	} else if fn == "getFPLmessage4EZ" {
-		result, err = getFPLmessage4EZ(stub, args)
+	} else if fn == "setFPL" {
+		result, err = setFPL(stub, args)
+	} else if fn == "getFPL" {
+		result, err = getFPL(stub, args)
+	} else if fn == "getFPLasBA" {
+		result, err = getFPLasBA(stub, args)
+	} else if fn == "getFPLasEZ" {
+		result, err = getFPLasEZ(stub, args)
 	} else { // assume 'get' even if fn is nil
 		result, err = get(stub, args)
 	}
@@ -79,8 +81,9 @@ func set(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	return args[1], nil
 }
 
-func setFPLmessage4EZ(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	if len(args) != 3 {
+// SetFPL stores the values of the specified asset key in State | PDC | Implicit NATS
+func setFPL(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+	if len(args) != 4 {
 		return "", fmt.Errorf("Incorrect arguments. Expecting a key and a value")
 	}
 
@@ -93,13 +96,13 @@ func setFPLmessage4EZ(stub shim.ChaincodeStubInterface, args []string) (string, 
 	if err1 != nil {
 		return "", fmt.Errorf("Failed to set asset: %s", args[0])
 	}
-
-	err2 := stub.PutPrivateData("ukairspacenats", args[0], []byte(args[2]))
+	pdc := "nats" + args[3]
+	err2 := stub.PutPrivateData(string(pdc), args[0], []byte(args[2]))
 	if err2 != nil {
 		return "", fmt.Errorf("Failed to set asset: %s", args[0])
 	}
 
-	return "Asset: is " + args[0], nil
+	return "Asset: is " + args[0] + "between nats & " + args[3], nil
 }
 
 // Get returns the value of the specified asset key
@@ -118,24 +121,9 @@ func get(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	return string(value), nil
 }
 
-// Get returns the value of the specified asset key
-func getPrivate(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	if len(args) != 1 {
-		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
-	}
-
-	value, err := stub.GetPrivateData("aftn", args[0])
-	if err != nil {
-		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
-	}
-	if value == nil {
-		return "", fmt.Errorf("Asset not found: %s", args[0])
-	}
-	return string(value), nil
-}
-
-func getFPLmessage4EZ(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	if len(args) != 1 {
+// GetFPL returns the value of the specified asset key stored in State | PDC | Implicit NATS
+func getFPL(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+	if len(args) != 2 {
 		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
 	}
 
@@ -146,7 +134,8 @@ func getFPLmessage4EZ(stub shim.ChaincodeStubInterface, args []string) (string, 
 	if value == nil {
 		return "", fmt.Errorf("Asset not found: %s", args[0])
 	}
-	value1, err1 := stub.GetPrivateData("ukairspacenats", args[0])
+	pdc := "nats" + args[1]
+	value1, err1 := stub.GetPrivateData(string(pdc), args[0])
 	if err1 != nil {
 		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
 	}
@@ -161,8 +150,52 @@ func getFPLmessage4EZ(stub shim.ChaincodeStubInterface, args []string) (string, 
 	if value2 == nil {
 		return "", fmt.Errorf("Asset not found: %s", args[0])
 	}
-	return "Public value is " + string(value2) + "  |--|  Private value is " + string(value) + " & " + string(value1), nil
+	return "data in state is " + string(value2) + " | data in PDC is " + string(value1) + " | data in Implicit NATS is " + string(value), nil
 }
+
+func getFPLasBA(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+	if len(args) != 1 {
+		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
+	}
+	value, err := stub.GetPrivateData("natsba", args[0])
+	if err != nil {
+		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
+	}
+	if value == nil {
+		return "", fmt.Errorf("Asset not found: %s", args[0])
+	}
+	// return string(value), nil
+	value1, err1 := stub.GetState(args[0])
+	if err1 != nil {
+		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err1)
+	}
+	if value1 == nil {
+		return "", fmt.Errorf("Asset not found: %s", args[0])
+	}
+	return "data in state is " + string(value1) + " | data in PDC is " + string(value), nil
+}
+func getFPLasEZ(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+	if len(args) != 1 {
+		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
+	}
+	value, err := stub.GetPrivateData("natsez", args[0])
+	if err != nil {
+		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
+	}
+	if value == nil {
+		return "", fmt.Errorf("Asset not found: %s", args[0])
+	}
+	// return string(value), nil
+	value1, err1 := stub.GetState(args[0])
+	if err1 != nil {
+		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err1)
+	}
+	if value1 == nil {
+		return "", fmt.Errorf("Asset not found: %s", args[0])
+	}
+	return "data in state is " + string(value1) + " | data in PDC is " + string(value), nil
+}
+
 
 // main function starts up the chaincode in the container during instantiate
 func main() {
