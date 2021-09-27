@@ -45,7 +45,7 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	} else if fn == "getFPLprivateasBA" {
 		result, err = getFPLprivateasBA(stub, args)
 	} else if fn == "getFPLprivateasEZ" {
-		result, err = getFPLprivateasBA(stub, args)
+		result, err = getFPLprivateasEZ(stub, args)
 	} else { // assume 'get' even if fn is nil
 		result, err = get(stub, args)
 	}
