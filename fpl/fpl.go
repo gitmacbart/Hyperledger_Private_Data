@@ -81,7 +81,7 @@ func setFPL(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	}
 	// Store Private info in Implicit nats database for any airline so available only to nats
 	implicit := "restricited nats: "+ args[2]
-	err1 := stub.PutPrivateData("_implicit_org_natsMSP", args[0], []byte(args[3]))
+	err1 := stub.PutPrivateData("_implicit_org_natsMSP", args[0], []byte(implicit))
 	if err1 != nil {
 		return "", fmt.Errorf("Failed to set asset: %s", args[0])
 	}
@@ -128,7 +128,7 @@ func getFPL(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	if err1 != nil {
 		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
 	}
-	if value == nil {
+	if value1 == nil {
 		return "", fmt.Errorf("Asset not found: %s", args[0])
 	}
 	// return string(value), nil
