@@ -239,3 +239,36 @@ peer chaincode invoke -o localhost:10050 --ordererTLSHostnameOverride orderer1-l
 ```
 peer chaincode query --channelID $CHANNEL_NAME_2 --name fchaincc -c '{"Args":["getFPLpublic","2021-10-03ZAGBA0872"]}'
 ```
+
+
+
+# Inter channels test:
+
+As NATS create a flight plan for BA with a public part[N0441F380 ] , a private part [INGIDIMBA] limited to BA & NATS and a restricted part [SIMBA] limited to NATS
+This use the chaincode fpl hosted on channel 'channelairspace'
+
+```
+>>>source term-nats 
+>>>peer chaincode invoke -o localhost:9050 --ordererTLSHostnameOverride orderer1-nats --tls true --cafile $ORDERER_CA --peerAddresses localhost:9051 --tlsRootCertFiles /tmp/hyperledger/nats/peer1/assets/tls-ca/tls-ca-cert.pem  --channelID $CHANNEL_NAME_1 --name fplcc -c '{"Args":["setFPL","2021-10-03ZAGBA0800","flight plan Public:N0441F380  ","flight plan Private:INGIDIMBA","flight plan Restricted:SIMBA","ba"]}'
+```
+
+Output is:
+
+2021-09-28 10:05:15.688 CEST [chaincodeCmd] chaincodeInvokeOrQuery -> INFO 001 Chaincode invoke successful. result: status:200 payload:"The asset is 2021-10-03ZAGBA0800 where public info is flight plan Public:N0441F380   and private info is flight plan Private:INGIDIMBAvisible only from nats & ba and restricted info is flight plan Restricted:SIMBA visible only from nats." 
+
+From BA node using chanicode fchain hosted on channel 'channelairports', query public and private informations for flight 2021-10-03ZAGBA080 and potentially update the asset on fchain@channelairports
+
+```
+>>>source term-ba                                                                                                       
+>>>peer chaincode query --channelID $CHANNEL_NAME_2 --name fchaincc -c '{"Args":["getFPLpublic","2021-10-03ZAGBA0800"]}'
+```
+
+Output is:
+flight plan Public:N0441F380  
+
+```
+>>>peer chaincode query --channelID $CHANNEL_NAME_2 --name fchaincc -c '{"Args":["getFPLprivateasBA","2021-10-03ZAGBA0800"]}'
+```
+
+Output is:
+Public info is flight plan Public:N0441F380   | Private info only visible by BA & NATS is flight plan Private:INGIDIMBA
