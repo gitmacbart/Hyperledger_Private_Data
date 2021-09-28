@@ -23,6 +23,8 @@ Type of databases:
 	Private
 	Implicit
 
+:eye_speech_bubble:
+**Note: Update different term-x files and paths to reflect your own environment**
 
 ```
 rm -rf /tmp/hyperledger/*
@@ -240,10 +242,9 @@ peer chaincode invoke -o localhost:10050 --ordererTLSHostnameOverride orderer1-l
 peer chaincode query --channelID $CHANNEL_NAME_2 --name fchaincc -c '{"Args":["getFPLpublic","2021-10-03ZAGBA0872"]}'
 ```
 
+# Inter channels test
 
-
-# Inter channels test:
-
+:flight_departure:
 As NATS create a flight plan for BA with a public part[N0441F380 ] , a private part [INGIDIMBA] limited to BA & NATS and a restricted part [SIMBA] limited to NATS
 This use the chaincode fpl hosted on channel 'channelairspace'
 
@@ -256,6 +257,7 @@ Output is:
 
 2021-09-28 10:05:15.688 CEST [chaincodeCmd] chaincodeInvokeOrQuery -> INFO 001 Chaincode invoke successful. result: status:200 payload:"The asset is 2021-10-03ZAGBA0800 where public info is flight plan Public:N0441F380   and private info is flight plan Private:INGIDIMBAvisible only from nats & ba and restricted info is flight plan Restricted:SIMBA visible only from nats." 
 
+:flight_arrival:
 From BA node using chanicode fchain hosted on channel 'channelairports', query public and private informations for flight 2021-10-03ZAGBA080 and potentially update the asset on fchain@channelairports
 
 ```
